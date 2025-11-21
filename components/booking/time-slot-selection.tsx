@@ -1,79 +1,22 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Service, Staff, TimeSlot, useBookingStore } from "@/store/booking-store";
+import { TimeSlot, useBookingStore } from "@/store/booking-store";
+import { Service, Staff } from "@/types/booking";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ChevronRightIcon, GroupIcon, HeartIcon, PlusIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import { StaffRequestSheet } from "../shared/sheet";
+import { cn } from "@/lib/utils";
+import { DateSelection } from "./date-selection";
 
 // Mock data - in a real app, this would come from an API
-const STAFF_MEMBERS: Staff[] = [
-  {
-    id: "staff1",
-    name: "Sarah Johnson",
-    specialties: ["Hair", "Beauty"],
-  },
-  {
-    id: "staff2",
-    name: "Emily Chen",
-    specialties: ["Nails", "Skincare"],
-  },
-  {
-    id: "staff3",
-    name: "Michael Brown",
-    specialties: ["Hair", "Wellness"],
-  },
-  {
-    id: "staff4",
-    name: "Jessica Martinez",
-    specialties: ["Hair", "Nails", "Beauty"],
-  },
-];
-
 // Generate time slots for the next 7 days
 function generateTimeSlots(selectedServices: Service[]): TimeSlot[] {
-  const slots: TimeSlot[] = [];
-  const today = new Date();
-  const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0);
-
-  // Generate slots for the next 7 days
-  for (let day = 0; day < 7; day++) {
-    const currentDate = new Date(today);
-    currentDate.setDate(today.getDate() + day);
-    currentDate.setHours(9, 0, 0, 0); // Start at 9 AM
-
-    // Generate slots from 9 AM to 6 PM
-    while (currentDate.getHours() < 18) {
-      const endTime = new Date(currentDate);
-      endTime.setMinutes(endTime.getMinutes() + totalDuration);
-
-      // Only add slot if it doesn't go past 6 PM
-      if (endTime.getHours() <= 18) {
-        STAFF_MEMBERS.forEach((staff) => {
-          // Check if staff can handle the selected services
-          const canHandle = selectedServices.some((service) =>
-            staff.specialties.includes(service.category)
-          );
-
-          if (canHandle) {
-            slots.push({
-              id: `slot-${day}-${currentDate.getHours()}-${currentDate.getMinutes()}-${staff.id}`,
-              startTime: currentDate.toISOString(),
-              endTime: endTime.toISOString(),
-              staffId: staff.id,
-              available: Math.random() > 0.3, // 70% availability for demo
-            });
-          }
-        });
-      }
-
-      currentDate.setMinutes(currentDate.getMinutes() + 30); // Next slot in 30 minutes
-    }
-  }
-
-  return slots;
+  return [];
 }
 
 interface TimeSlotSelectionProps {
@@ -83,24 +26,20 @@ interface TimeSlotSelectionProps {
   onTimeSlotSelection: (timeSlot: TimeSlot) => void;
 }
 
-export function TimeSlotSelection({     
+export function TimeSlotSelection({
 }: TimeSlotSelectionProps) {
   const [selectedDate, setSelectedDate] = useState<string>("today");
-  const [selectedStaffId, setSelectedStaffId] = useState<string>("");
+  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
   const { selectedServices } = useBookingStore();
   const timeSlots = useMemo(() => {
     return generateTimeSlots(selectedServices);
   }, [selectedServices]);
 
-  // Filter available staff based on selected services
-  const availableStaff = useMemo(() => {
-    return STAFF_MEMBERS.filter((staff) => selectedServices.some((service) => staff.specialties.includes(service.category)));
-  }, [selectedServices]);
 
   // Group time slots by date
   const slotsByDate = useMemo(() => {
-    const grouped: Record<string, TimeSlot[]> = {}; 
+    const grouped: Record<string, TimeSlot[]> = {};
     timeSlots.forEach((slot) => {
       const date = new Date(slot.startTime);
       const dateKey = date.toDateString();
@@ -152,68 +91,51 @@ export function TimeSlotSelection({
     });
   };
 
+  const [staffRequestSheetOpen, setStaffRequestSheetOpen] = useState(false);
+
 
   return (
     <div className="space-y-6">
       {/* Staff Selection */}
       <div>
-        <h3 className="mb-4 text-lg font-semibold">Select Staff Member</h3>
-        <RadioGroup
-          value={selectedStaffId}
-          onValueChange={(value) => {
-            const staff = availableStaff.find((s) => s.id === value);
-            if (staff) {
-              setSelectedStaffId(staff.id);
-            }
-          }}
-          className="grid gap-4 md:grid-cols-2"
-        >
-          {availableStaff.map((staff) => {
-            const isSelected = selectedStaffId === staff.id;
-            return (
-              <div key={staff.id}>
-                <RadioGroupItem
-                  value={staff.id}
-                  id={`staff-${staff.id}`}
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor={`staff-${staff.id}`}
-                  className={`flex cursor-pointer items-center gap-4 rounded-lg border-2 p-4 transition-all hover:shadow-md ${
-                    isSelected
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-gray-200 bg-white"
-                  }`}
-                >
-                  <Avatar>
-                    <AvatarFallback>
-                      {staff.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="font-semibold">{staff.name}</p>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {staff.specialties.map((specialty) => (
-                        <Badge key={specialty} variant="secondary" className="text-xs">
-                          {specialty}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </Label>
-              </div>
-            );
-          })}
-        </RadioGroup>
+        <h3 className="mb-4 text-lg font-semibold">Select Staff</h3>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setSelectedStaff(null)}
+            size="lg"
+            className={`border-gray-300 bg-white text-gray-700 cursor-pointer flex-1 ${!selectedStaff ? "border-blue-600 bg-blue-600 text-white" : ""}`}
+          >
+            Anyone
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setStaffRequestSheetOpen(true)}
+            size="lg"
+            className={`border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-all cursor-pointer flex-1 ${selectedStaff ? "border-blue-600 " : ""}`}
+
+          >
+            <div className="flex items-center gap-2">
+              <span className="ml-2">Request</span>
+              {selectedStaff && (
+                <div className="flex items-center gap-2">
+                  <HeartIcon className="size-4 text-red-500" fill="red" />
+                  <span className="text-sm font-bold">{selectedStaff.first_name}</span>
+                </div>
+              )}
+            </div>
+            <ChevronRightIcon className="size-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Date Selection */}
       <div>
-        <h3 className="mb-4 text-lg font-semibold">Select Date</h3>
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="">
+          <h3 className="mb-4 text-lg font-semibold">Select Date</h3>
+          <DateSelection />
+        </div>
+        {/* <div className="flex gap-2 overflow-x-auto pb-2">
           {[
             { key: "today", label: "Today" },
             { key: "tomorrow", label: "Tomorrow" },
@@ -227,16 +149,15 @@ export function TimeSlotSelection({
             <button
               key={dateOption.key}
               onClick={() => setSelectedDate(dateOption.key)}
-              className={`min-w-[100px] rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
-                selectedDate === dateOption.key
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-              }`}
+              className={`min-w-[100px] rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${selectedDate === dateOption.key
+                ? "border-blue-600 bg-blue-600 text-white"
+                : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                }`}
             >
               {dateOption.label}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* Time Slot Selection */}
@@ -254,8 +175,8 @@ export function TimeSlotSelection({
             onValueChange={(value) => setSelectedTimeSlot(filteredSlots.find((s) => s.id === value) || null)}
             className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"
           >
-            {filteredSlots.map((slot) => {
-              const staff = STAFF_MEMBERS.find((s) => s.id === slot.staffId);
+            {/* {filteredSlots.map((slot) => {
+              const staff = BUSINESS_STAFFS.find((s) => s.id === parseInt(slot.staffId));
               return (
                 <div key={slot.id}>
                   <RadioGroupItem
@@ -272,12 +193,12 @@ export function TimeSlotSelection({
                       {formatDate(slot.startTime)}
                     </span>
                     {staff && (
-                      <span className="mt-1 text-xs text-gray-400">{staff.name}</span>
+                      <span className="mt-1 text-xs text-gray-400">{staff.first_name} {staff.last_name}</span>
                     )}
                   </Label>
                 </div>
               );
-            })}
+            })} */}
           </RadioGroup>
         )}
       </div>
@@ -297,6 +218,14 @@ export function TimeSlotSelection({
           </CardContent>
         </Card>
       )}
+      <StaffRequestSheet
+        open={staffRequestSheetOpen}
+        onOpenChange={setStaffRequestSheetOpen}
+        onStaffSelect={(staff) => {
+          setSelectedStaff(staff);
+          setStaffRequestSheetOpen(false);
+        }}
+      />
     </div>
   );
 }

@@ -34,3 +34,17 @@ export interface Service {
   icon?: string | null;
   image?: string | null;
 }
+
+
+export interface Staff {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  role: number;
+  role_name: string;
+  is_active: boolean;
+  created_at: string;
+  photo?: string | null;
+}

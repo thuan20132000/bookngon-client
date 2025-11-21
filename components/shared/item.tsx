@@ -1,9 +1,10 @@
-import { Service } from "@/types/booking";
+import { Service, Staff } from "@/types/booking";
 import { Card, CardContent, CardHeader } from "../ui/card";
 
 
 import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface ServiceItemProps {
   service: Service;
@@ -49,6 +50,54 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
           className="ml-2"
         />
       </div>
+    </div>
+  );
+};
+
+
+interface StaffItemProps {
+  staff: Staff;
+  selected?: boolean;
+  onSelect?: (staff: Staff) => void;
+}
+
+export const StaffItem: React.FC<StaffItemProps> = ({
+  staff,
+  selected = false,
+  onSelect,
+}) => {
+  return (
+    <div
+      className={`transition-all p-2 rounded-lg border-2 ${
+        selected ? "border-blue-500 bg-blue-50" : "border-gray-200"
+      } hover:border-blue-400 cursor-pointer`}
+      onClick={() => onSelect?.(staff)}
+      tabIndex={0}
+      role="button"
+      aria-pressed={selected}
+      onKeyDown={e => {
+        if (e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          onSelect?.(staff);
+        }
+      }}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarFallback>
+              {staff.first_name.split(" ").map((n: string) => n[0]).join("")}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <h3 className="text-lg font-medium">{staff.first_name} {staff.last_name}</h3>
+            <div className="mt-1 flex flex-wrap gap-1">
+              <span className="text-xs text-gray-500">{staff.role_name}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>
   );
 };

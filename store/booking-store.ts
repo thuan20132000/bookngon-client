@@ -1,11 +1,5 @@
 import { create } from "zustand";
-import { Service } from "@/types/booking";
-
-export type Staff = {
-  id: string;
-  name: string;
-  specialties: string[];
-};
+import { Service, Staff } from "@/types/booking";
 
 export type TimeSlot = {
   id: string;
@@ -17,11 +11,12 @@ export type TimeSlot = {
 
 import { BOOKING_STEPS } from "@/enums/booking.enums";
 
+
 export interface BookingState {
   // Step management
   currentStep: BOOKING_STEPS;
   // Booking data
-  selectedServices: Service[];  
+  selectedServices: Service[];
   selectedStaff?: Staff;
   selectedTimeSlot?: TimeSlot;
   customerName: string;
@@ -67,7 +62,7 @@ const initialState = {
   selectedStaff: undefined,
   selectedTimeSlot: undefined,
   customerName: "",
-  customerPhone: "",  
+  customerPhone: "",
 };
 
 export const useBookingStore = create<BookingState>((set, get) => ({
