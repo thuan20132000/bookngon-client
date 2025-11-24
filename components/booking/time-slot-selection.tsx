@@ -2,22 +2,52 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useBookingStore } from "@/store/booking-store";
-import { Service, Staff, TimeSlot } from "@/types/booking";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Staff, TimeSlot } from "@/types/booking";
+import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronRightIcon, GroupIcon, HeartIcon, PlusIcon } from "lucide-react";
+import { ChevronRightIcon, HeartIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { StaffRequestSheet } from "../shared/sheet";
 import { DateSelection } from "./date-selection";
 import dayjs from "dayjs";
 import { businessBookingApi, TimeSlotsParams } from "@/lib/api/business-booking.api";
 
-// Mock data - in a real app, this would come from an API
-// Generate time slots for the next 7 days
-function generateTimeSlots(selectedServices: Service[]): TimeSlot[] {
-  return [];
+type TimeOfDay = "morning" | "afternoon" | "evening";
+
+interface GroupedTimeSlots {
+  morning: TimeSlot[];
+  afternoon: TimeSlot[];
+  evening: TimeSlot[];
+}
+
+// Categorize time slot by time of day
+function getTimeOfDay(time: string): TimeOfDay {
+  const [hours] = time.split(":").map(Number);
+  if (hours >= 6 && hours < 12) return "morning";
+  if (hours >= 12 && hours < 17) return "afternoon";
+  return "evening";
+}
+
+// Group time slots by time of day
+function groupTimeSlotsByTimeOfDay(timeSlots: TimeSlot[]): GroupedTimeSlots {
+  const grouped: GroupedTimeSlots = {
+    morning: [],
+    afternoon: [],
+    evening: [],
+  };
+
+  timeSlots.forEach((slot) => {
+    const timeOfDay = getTimeOfDay(slot.start_time);
+    grouped[timeOfDay].push(slot);
+  });
+
+  // Sort each group by start time
+  grouped.morning.sort((a, b) => a.start_time.localeCompare(b.start_time));
+  grouped.afternoon.sort((a, b) => a.start_time.localeCompare(b.start_time));
+  grouped.evening.sort((a, b) => a.start_time.localeCompare(b.start_time));
+
+  return grouped;
 }
 
 interface TimeSlotSelectionProps {
@@ -36,6 +66,12 @@ export function TimeSlotSelection({
   const { selectedServices, business, getTotalDuration } = useBookingStore();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
+
+  // Group time slots by time of day
+  const groupedTimeSlots = useMemo(() => {
+    return groupTimeSlotsByTimeOfDay(timeSlots);
+  }, [timeSlots]);
+
   useEffect(() => {
     const fetchTimeSlots = async () => {
       if (!business || !selectedDate) return;
@@ -48,7 +84,6 @@ export function TimeSlotSelection({
         staff_id: selectedStaff?.id,
       };
       const response = await businessBookingApi.getTimeSlots(timeSlotsParams);
-      console.log("time slots:: ", response);
       setTimeSlots(response.results!);
     };
     fetchTimeSlots();
@@ -60,7 +95,7 @@ export function TimeSlotSelection({
     <div className="space-y-6">
       {/* Staff Selection */}
       <div>
-        <h3 className="mb-4 text-lg font-semibold">Select Staff</h3>
+        <h6 className="mb-4 text-lg font-semibold">Technician</h6>
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -94,7 +129,7 @@ export function TimeSlotSelection({
       {/* Date Selection */}
       <div>
         <div className="">
-          <h3 className="mb-4 text-lg font-semibold">Select Date</h3>
+          <h3 className="mb-4 text-lg font-semibold">Date</h3>
           <DateSelection
             date={selectedDate}
             onDateSelect={(date: Date) => setSelectedDate(date)}
@@ -104,7 +139,7 @@ export function TimeSlotSelection({
 
       {/* Time Slot Selection */}
       <div>
-        <h3 className="mb-4 text-lg font-semibold">Select Time</h3>
+        <h6 className="mb-4 text-lg font-semibold">Time</h6>
         {timeSlots.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center text-gray-500">
@@ -115,27 +150,86 @@ export function TimeSlotSelection({
           <RadioGroup
             value={selectedTimeSlot?.start_time}
             onValueChange={(value) => setSelectedTimeSlot(timeSlots.find((s) => s.start_time === value) || null)}
-            className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"
           >
-            {timeSlots.map((slot) => {
-              return (
-                <div key={slot.start_time}>
-                  <RadioGroupItem
-                    value={slot.start_time}
-                    id={slot.start_time}
-                    className="peer sr-only"
-                  />
-                  <Label
-                    htmlFor={slot.start_time}
-                    className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition-all hover:border-blue-500 hover:bg-blue-50 peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-50"
-                  >
-                    <span className="text-sm font-bold cursor-pointer">
-                      {slot.start_time}
-                    </span>
-                  </Label>
+            <div className="space-y-6">
+              {/* Morning Section */}
+              {groupedTimeSlots.morning.length > 0 && (
+                <div>
+                  <h4 className="mb-3 text-sm font-medium text-gray-700">Morning</h4>
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    {groupedTimeSlots.morning.map((slot) => (
+                      <div key={slot.start_time}>
+                        <RadioGroupItem
+                          value={slot.start_time}
+                          id={slot.start_time}
+                          className="peer sr-only"
+                        />
+                        <Label
+                          htmlFor={slot.start_time}
+                          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition-all hover:border-blue-500 hover:bg-blue-50 peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-50"
+                        >
+                          <span className="text-sm font-bold cursor-pointer">
+                            {slot.start_time}
+                          </span>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              );
-            })}
+              )}
+
+              {/* Afternoon Section */}
+              {groupedTimeSlots.afternoon.length > 0 && (
+                <div>
+                  <h4 className="mb-3 text-sm font-medium text-gray-700">Afternoon</h4>
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    {groupedTimeSlots.afternoon.map((slot) => (
+                      <div key={slot.start_time}>
+                        <RadioGroupItem
+                          value={slot.start_time}
+                          id={slot.start_time}
+                          className="peer sr-only"
+                        />
+                        <Label
+                          htmlFor={slot.start_time}
+                          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition-all hover:border-blue-500 hover:bg-blue-50 peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-50"
+                        >
+                          <span className="text-sm font-bold cursor-pointer">
+                            {slot.start_time}
+                          </span>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Evening Section */}
+              {groupedTimeSlots.evening.length > 0 && (
+                <div>
+                  <h4 className="mb-3 text-sm font-medium text-gray-700">Evening</h4>
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    {groupedTimeSlots.evening.map((slot) => (
+                      <div key={slot.start_time}>
+                        <RadioGroupItem
+                          value={slot.start_time}
+                          id={slot.start_time}
+                          className="peer sr-only"
+                        />
+                        <Label
+                          htmlFor={slot.start_time}
+                          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition-all hover:border-blue-500 hover:bg-blue-50 peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-50"
+                        >
+                          <span className="text-sm font-bold cursor-pointer">
+                            {slot.start_time}
+                          </span>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </RadioGroup>
         )}
       </div>

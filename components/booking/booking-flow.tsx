@@ -1,16 +1,16 @@
 "use client";
 
-import { useBookingStore, TimeSlot } from "@/store/booking-store";
+import { useBookingStore } from "@/store/booking-store";
+import { TimeSlot } from "@/types/booking";
 import { ServiceSelection } from "./service-selection";
 import { TimeSlotSelection } from "./time-slot-selection";
 import { CustomerInfoForm } from "./customer-info-form";
 import { BookingConfirmation } from "./booking-confirmation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { BOOKING_STEPS } from "@/enums/booking.enums";
 import { Staff } from "@/types/booking";
 
 // Re-export types for backwards compatibility
-export type { TimeSlot } from "@/store/booking-store";
 
 export type BookingData = {
   selectedStaff?: Staff;
@@ -31,35 +31,6 @@ export function BookingFlow() {
     setCustomerInfo,
   } = useBookingStore();
 
-
-
-
-  const renderStepTitle = (step: BOOKING_STEPS) => {
-    switch (step) {
-      case BOOKING_STEPS.SERVICE_SELECTION:
-        return "Step 1: Select Services";
-      case BOOKING_STEPS.TIME_SLOT_SELECTION:
-        return "Step 2: Select Staff and Time Slot";
-      case BOOKING_STEPS.CUSTOMER_INFO:
-        return "Step 3: Your Information";
-      case BOOKING_STEPS.CONFIRMATION:
-        return "Booking Confirmed";
-    }
-  };
-
-  const renderStepDescription = (step: BOOKING_STEPS) => {
-    switch (step) {
-      case BOOKING_STEPS.SERVICE_SELECTION:
-        return "Choose the services you'd like to book";
-      case BOOKING_STEPS.TIME_SLOT_SELECTION:
-        return "Select a staff and an available time slot";
-      case BOOKING_STEPS.CUSTOMER_INFO:
-        return "Enter your contact information";
-      case BOOKING_STEPS.CONFIRMATION:
-        return "Your booking has been confirmed";
-    }
-  };
-
   const renderContentStep = (step: BOOKING_STEPS) => {
     switch (step) {
       case BOOKING_STEPS.SERVICE_SELECTION:
@@ -78,18 +49,7 @@ export function BookingFlow() {
 
   return (
     <div className="space-y-6">
-      {/* Progress Steps */}
-
-      {/* Step Content */}
       <Card>
-        <CardHeader>
-          <CardTitle>
-            {renderStepTitle(currentStep)}
-          </CardTitle>
-          <CardDescription>
-            {renderStepDescription(currentStep)}
-          </CardDescription>
-        </CardHeader>
         <CardContent>
           {renderContentStep(currentStep)}
         </CardContent>
