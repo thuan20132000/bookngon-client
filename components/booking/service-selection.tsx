@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Category, Service } from "@/types/booking";
 import { useBookingStore } from "@/store/booking-store";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,204 +15,29 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { ServiceItem } from "../shared/item";
-import { BOOKING_STEPS } from "@/enums/booking.enums";
-
-// Mock data - in a real app, this would come from an API
-const CATEGORY_SERVICES: Category[] =
-  [
-    {
-      id: 6,
-      business: 1,
-      name: "Dental Services",
-      description: "Dental Services",
-      sort_order: 0,
-      is_active: true,
-      is_online_booking: true,
-      created_at: "2025-11-19T06:42:03.427120Z",
-      color_code: "#ab8c50",
-      icon: null,
-      image: null,
-      services: [
-        {
-          "id": 2,
-          "category": 6,
-          "category_name": "Dental Services",
-          "name": "Men's Cut",
-          "description": "Men's Cut",
-          "duration_minutes": 30,
-          "price": "45.00",
-          "is_active": true,
-          "requires_staff": true,
-          "max_capacity": 1,
-          "is_online_booking": true,
-          "created_at": "2025-11-19T06:42:03.428919Z",
-          "updated_at": "2025-11-19T06:53:33.346229Z",
-          "sort_order": 0,
-          "color_code": "#8f863e",
-          "icon": "fas fa-cut",
-          "image": "https://snapslearning-bk.s3.amazonaws.com/media/services/men_cut.jpg"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "business": 1,
-      "name": "Hair Coloring",
-      "description": "Hair Coloring",
-      "sort_order": 0,
-      "is_active": true,
-      "is_online_booking": true,
-      "created_at": "2025-11-19T06:42:03.425837Z",
-      "color_code": "#a55b5b",
-      "icon": null,
-      "image": null,
-      "services": [
-        {
-          "id": 12,
-          "category": 2,
-          "category_name": "Hair Coloring",
-          "name": "Hair Cut For Man",
-          "description": "",
-          "duration_minutes": 30,
-          "price": "0.00",
-          "is_active": true,
-          "requires_staff": false,
-          "max_capacity": 1,
-          "is_online_booking": true,
-          "created_at": "2025-11-19T07:03:12.764176Z",
-          "updated_at": "2025-11-19T07:03:12.764185Z",
-          "sort_order": 0,
-          "color_code": "#a55b5b",
-          "icon": null,
-          "image": null
-        },
-        {
-          "id": 11,
-          "category": 2,
-          "category_name": "Hair Coloring",
-          "name": "jjkbj",
-          "description": "",
-          "duration_minutes": 30,
-          "price": "0.00",
-          "is_active": true,
-          "requires_staff": false,
-          "max_capacity": 1,
-          "is_online_booking": true,
-          "created_at": "2025-11-19T07:03:01.631521Z",
-          "updated_at": "2025-11-19T07:03:01.631537Z",
-          "sort_order": 0,
-          "color_code": "#c56363",
-          "icon": null,
-          "image": null
-        }
-      ]
-    },
-    {
-      "id": 1,
-      "business": 1,
-      "name": "Hair Cuts",
-      "description": "Hair Cuts",
-      "sort_order": 0,
-      "is_active": true,
-      "is_online_booking": true,
-      "created_at": "2025-11-19T06:42:03.425375Z",
-      "color_code": null,
-      "icon": null,
-      "image": null,
-      "services": []
-    },
-    {
-      "id": 3,
-      "business": 1,
-      "name": "Hair Treatments",
-      "description": "Hair Treatments",
-      "sort_order": 0,
-      "is_active": true,
-      "is_online_booking": true,
-      "created_at": "2025-11-19T06:42:03.426201Z",
-      "color_code": null,
-      "icon": null,
-      "image": null,
-      "services": []
-    },
-    {
-      "id": 4,
-      "business": 1,
-      "name": "Nail Services",
-      "description": "Nail Services",
-      "sort_order": 0,
-      "is_active": true,
-      "is_online_booking": true,
-      "created_at": "2025-11-19T06:42:03.426602Z",
-      "color_code": null,
-      "icon": null,
-      "image": null,
-      "services": [
-        {
-          "id": 14,
-          "category": 4,
-          "category_name": "Nail Services",
-          "name": "csa acs as",
-          "description": "",
-          "duration_minutes": 30,
-          "price": "0.00",
-          "is_active": true,
-          "requires_staff": false,
-          "max_capacity": 1,
-          "is_online_booking": true,
-          "created_at": "2025-11-19T16:31:49.372217Z",
-          "updated_at": "2025-11-19T16:31:49.372244Z",
-          "sort_order": 0,
-          "color_code": "#b05858",
-          "icon": null,
-          "image": null
-        },
-        {
-          "id": 15,
-          "category": 4,
-          "category_name": "Nail Services",
-          "name": "csa sac sac sac",
-          "description": "",
-          "duration_minutes": 30,
-          "price": "0.00",
-          "is_active": true,
-          "requires_staff": false,
-          "max_capacity": 1,
-          "is_online_booking": true,
-          "created_at": "2025-11-19T16:31:54.779273Z",
-          "updated_at": "2025-11-19T16:31:54.779281Z",
-          "sort_order": 0,
-          "color_code": "#b46868",
-          "icon": null,
-          "image": null
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "business": 1,
-      "name": "Spa Services",
-      "description": "Spa Services",
-      "sort_order": 0,
-      "is_active": true,
-      "is_online_booking": true,
-      "created_at": "2025-11-19T06:42:03.426848Z",
-      "color_code": null,
-      "icon": null,
-      "image": null,
-      "services": []
-    }
-  ];
+import { businessBookingApi } from "@/lib/api/business-booking.api";
 
 export function ServiceSelection() {
   const {
     selectedServices,
     addService,
     removeService,
-    setCurrentStep,
+    business,
+    categoriesServices,
+    setCategoriesServices,
   } = useBookingStore();
   // For accordions, optionally allow multiple open or single open: here we allow multiple open
   const [openCategories, setOpenCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchCategoriesServices = async () => {
+      console.log('fetching categories services');
+      if (!business) return;
+      const response = await businessBookingApi.getCategoriesServices({ business_id: business?.id });
+      setCategoriesServices(response.results as Category[]);
+    };
+    fetchCategoriesServices();
+  }, [business, setCategoriesServices]);
 
 
   // Utility to toggle a service
@@ -242,7 +67,7 @@ export function ServiceSelection() {
         onValueChange={setOpenCategories}
         className="w-full"
       >
-        {CATEGORY_SERVICES.map((category) => (
+        {categoriesServices.map((category) => (
           <AccordionItem key={category.id} value={String(category.id)}>
             <AccordionTrigger onClick={() => handleAccordionChange(category.id)}>
               <div className="flex items-center gap-2">

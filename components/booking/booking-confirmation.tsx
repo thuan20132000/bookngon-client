@@ -31,12 +31,12 @@ export function BookingConfirmation({ bookingData }: BookingConfirmationProps) {
     });
   };
 
-  const totalPrice = bookingData.selectedServices.reduce(
-    (sum, service) => sum + service.price,
+  const totalPrice = bookingData.selectedServices?.reduce(
+    (sum: number, service: Service) => sum + parseFloat(service.price),
     0
   );
-  const totalDuration = bookingData.selectedServices.reduce(
-    (sum, service) => sum + service.duration,
+  const totalDuration = bookingData.selectedServices?.reduce(
+    (sum: number, service: Service) => sum + service.duration,
     0
   );
 

@@ -48,3 +48,9 @@ export interface Staff {
   created_at: string;
   photo?: string | null;
 }
+
+export interface TimeSlot {
+  start_time: string;
+  end_time: string;
+  staff_id: number;
+}

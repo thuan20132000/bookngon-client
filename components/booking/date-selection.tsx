@@ -13,15 +13,19 @@ import {
 } from "@/components/ui/popover"
 import dayjs from "dayjs"
 
-export function DateSelection() {
+interface DateSelectionProps {
+  date: Date | undefined;
+  onDateSelect: (date: Date) => void;
+}
+
+export function DateSelection({ date, onDateSelect }: DateSelectionProps) {
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(undefined)
 
-  const onDateSelect = (date: Date) => {
-    setDate(date)
+  const onDateChange = (date: Date) => {
     setOpen(false)
+    onDateSelect(date)
   }
-
+ 
   return (
     <div className="flex flex-1 flex-col gap-3">
       <Popover open={open} onOpenChange={setOpen}>
@@ -38,11 +42,11 @@ export function DateSelection() {
         <PopoverContent className="w-full overflow-hidden p-2 flex flex-col gap-2" align="start">
           <Calendar
             mode="single"
-            selected={date}
+            selected={date ? dayjs(date).toDate() : undefined}
             captionLayout="dropdown"
             onSelect={(date) => {
               if (date) {
-                onDateSelect(date)
+                onDateChange(date)
               }
             }}
 
@@ -57,14 +61,14 @@ export function DateSelection() {
             <Button
               variant="outline"
               className="flex-1 cursor-pointer"
-              onClick={() => onDateSelect(dayjs().toDate())}
+              onClick={() => onDateChange(dayjs().toDate())}
             >
               Today
             </Button>
             <Button
               variant="outline"
               className="flex-1 cursor-pointer"
-              onClick={() => onDateSelect(dayjs().add(1, 'day').toDate())}
+              onClick={() => onDateChange(dayjs().add(1, 'day').toDate())}
             >
               Tomorrow
             </Button>

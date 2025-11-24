@@ -1,18 +1,15 @@
 import { create } from "zustand";
-import { Service, Staff } from "@/types/booking";
-
-export type TimeSlot = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  staffId: string;
-  available: boolean;
-};
+import { Category, Service, Staff, TimeSlot } from "@/types/booking";
 
 import { BOOKING_STEPS } from "@/enums/booking.enums";
+import { Business } from "@/types/business";
 
 
 export interface BookingState {
+
+  // Business
+  business?: Business | null;
+  setBusiness: (business: Business | null) => void;
   // Step management
   currentStep: BOOKING_STEPS;
   // Booking data
@@ -21,6 +18,11 @@ export interface BookingState {
   selectedTimeSlot?: TimeSlot;
   customerName: string;
   customerPhone: string;
+  businessStaffs: Staff[];
+
+  // Categories services
+  categoriesServices: Category[];
+  setCategoriesServices: (categoriesServices: Category[]) => void;
 
   // Actions
   setCurrentStep: (step: BOOKING_STEPS) => void;
@@ -31,6 +33,9 @@ export interface BookingState {
   getTotalDuration: () => number;
   getTotalPrice: () => number;
 
+  // Business staff actions
+  setBusinessStaffs: (staffs: Staff[]) => void;
+  getBusinessStaffs: () => Staff[];
 
   // Service actions
   setSelectedServices: (services: Service[]) => void;
@@ -63,10 +68,44 @@ const initialState = {
   selectedTimeSlot: undefined,
   customerName: "",
   customerPhone: "",
+  businessStaffs: [],
+  categoriesServices: [],
+  business: {
+    id: 1,
+    name: "Style Studio Hair Salon 1",
+    business_type: 1,
+    business_type_name: "Hair Salon",
+    phone_number: "+1-555-0123",
+    email: "info@stylestudio.com",
+    website: "https://stylestudio.com",
+    address: "123 Main Street 2",
+    city: "Toronto",
+    state_province: "ON",
+    postal_code: "M5V 3A8",
+    country: "Canada",
+    timezone: "America/Toronto",
+    status: "active",
+    description: "Professional hair salon offering cutting-edge styles and treatments",
+    logo: null,
+    created_at: "2025-11-19T06:42:03.424337Z",
+    updated_at: "2025-11-23T06:29:31.264507Z"
+  },
 };
 
 export const useBookingStore = create<BookingState>((set, get) => ({
   ...initialState,
+
+  // Business actions
+  setBusiness: (business) => set({ business: business }),
+  getBusiness: () => get().business,
+
+  // Business staff actions
+  setBusinessStaffs: (staffs) => set({ businessStaffs: staffs }),
+  getBusinessStaffs: () => get().businessStaffs,
+
+  // Categories services actions
+  setCategoriesServices: (categoriesServices) => set({ categoriesServices: categoriesServices }),
+  getCategoriesServices: () => get().categoriesServices,
 
   // Step management
   setCurrentStep: (step) => set({ currentStep: step }),
@@ -111,7 +150,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   },
   getTotalPrice: () => {
     const { selectedServices } = get();
-    return selectedServices.reduce((sum, service) => sum + parseFloat(service.price.toString()), 0);
+    return selectedServices.reduce((sum: number, service: Service) => sum + parseFloat(service.price.toString()), 0);
   },
 
   // Staff actions
