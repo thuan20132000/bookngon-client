@@ -1,5 +1,5 @@
 import { api } from "./base";
-import { Staff, TimeSlot } from "@/types/booking";
+import { Appointment, Client, ClientCreate, CreateAppointmentWithServicesPayload, Staff, TimeSlot } from "@/types/booking";
 
 interface BusinessBookingParams {
   business_id: number;
@@ -12,6 +12,13 @@ export interface TimeSlotsParams {
   service_ids: number[];
   duration: number;
 };
+
+export interface SearchClientByPhoneParams {
+  business_id: number;
+  phone: string;
+};
+
+
 
 export const businessBookingApi = {
   getBusinessBooking: async () => {
@@ -31,6 +38,26 @@ export const businessBookingApi = {
 
   getTimeSlots: async (params: TimeSlotsParams) => {
     const response = await api.get<TimeSlot[]>('/business-booking/available-time-slots', { params });
+    return response.data;
+  },
+
+  getClientByPhone: async (params: SearchClientByPhoneParams) => {
+    const response = await api.get<ClientCreate>('/business-booking/client-by-phone/', { params });
+    return response.data;
+  },
+
+  createClient: async (client: ClientCreate) => {
+    const response = await api.post<ClientCreate>('/business-booking/client/', client);
+    return response.data;
+  },
+
+  updateClient: async (id: number, client: ClientCreate) => {
+    const response = await api.put<ClientCreate>(`/business-booking/client/${id}`, client);
+    return response.data;
+  },
+
+  createAppointmentWithServices: async (payload: CreateAppointmentWithServicesPayload) => {
+    const response = await api.post<Appointment>('/business-booking/appointment/', payload);
     return response.data;
   },
 };

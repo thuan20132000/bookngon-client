@@ -1,23 +1,26 @@
 import { create } from "zustand";
-import { Category, Service, Staff, TimeSlot } from "@/types/booking";
+import { Category, ClientCreate, Service, Staff, TimeSlot, AppointmentService, CreateAppointmentWithServicesPayload } from "@/types/booking";
 
 import { BOOKING_STEPS } from "@/enums/booking.enums";
 import { Business } from "@/types/business";
 
 
 export interface BookingState {
-
+  createAppointmentPayload: CreateAppointmentWithServicesPayload | null;
+  setCreateAppointmentPayload: (payload: CreateAppointmentWithServicesPayload | null) => void;
   // Business
   business?: Business | null;
   setBusiness: (business: Business | null) => void;
   // Step management
   currentStep: BOOKING_STEPS;
   // Booking data
-  selectedServices: Service[];
-  selectedStaff?: Staff;
-  selectedTimeSlot?: TimeSlot;
-  customerName: string;
-  customerPhone: string;
+  selectedAppointmentServices: AppointmentService[];
+  selectedStaff?: Staff | null;
+  selectedTimeSlot?: TimeSlot | null;
+  selectedDate?: Date | null;
+  setSelectedDate: (date: Date | null) => void;
+  clientInfo: ClientCreate | null;
+  setClientInfo: (clientInfo: ClientCreate | null) => void;
   businessStaffs: Staff[];
 
   // Categories services
@@ -38,36 +41,31 @@ export interface BookingState {
   getBusinessStaffs: () => Staff[];
 
   // Service actions
-  setSelectedServices: (services: Service[]) => void;
-  addService: (service: Service) => void;
-  removeService: (serviceId: number) => void;
-  toggleService: (service: Service) => void;
-
+  setSelectedAppointmentServices: (appointmentServices: AppointmentService[]) => void;
+  addAppointmentService: (appointmentService: AppointmentService) => void;
+  removeAppointmentService: (appointmentService: AppointmentService) => void;
   // Staff actions
-  setSelectedStaff: (staff?: Staff) => void;
+  setSelectedStaff: (staff?: Staff | null) => void;
 
   // Time slot actions
-  setSelectedTimeSlot: (timeSlot?: TimeSlot) => void;
+  setSelectedTimeSlot: (timeSlot?: TimeSlot | null) => void;
 
   // Customer info actions
-  setCustomerInfo: (name: string, phone: string) => void;
-  setCustomerName: (name: string) => void;
-  setCustomerPhone: (phone: string) => void;
-
+  getClientInfo: () => ClientCreate | null;
   // Utility actions
   resetBooking: () => void;
-  canProceedToStep2: () => boolean;
-  canProceedToStep3: () => boolean;
-  canProceedToStep4: () => boolean;
+  canProceedToTimeSlotStep: () => boolean;
+  canProceedToCustomerInfoStep: () => boolean;
+
 }
 
 const initialState = {
   currentStep: BOOKING_STEPS.SERVICE_SELECTION,
-  selectedServices: [],
-  selectedStaff: undefined,
-  selectedTimeSlot: undefined,
-  customerName: "",
-  customerPhone: "",
+  selectedAppointmentServices: [],
+  selectedStaff: null,
+  selectedTimeSlot: null,
+  selectedDate: null,
+  clientInfo: null,
   businessStaffs: [],
   categoriesServices: [],
   business: {
@@ -90,10 +88,16 @@ const initialState = {
     created_at: "2025-11-19T06:42:03.424337Z",
     updated_at: "2025-11-23T06:29:31.264507Z"
   },
+  createAppointmentPayload: null,
 };
 
 export const useBookingStore = create<BookingState>((set, get) => ({
   ...initialState,
+
+  // Create appointment payload actions
+  setCreateAppointmentPayload: (payload: CreateAppointmentWithServicesPayload | null) => set({
+    createAppointmentPayload: payload
+  }),
 
   // Business actions
   setBusiness: (business) => set({ business: business }),
@@ -111,46 +115,37 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   setCurrentStep: (step) => set({ currentStep: step }),
   nextStep: () => {
     const { currentStep } = get();
-    if (currentStep < BOOKING_STEPS.CUSTOMER_INFO) {
+    if (currentStep < BOOKING_STEPS.CONFIRMATION) {
       set({ currentStep: currentStep + 1 });
     }
   },
   previousStep: () => {
     const { currentStep } = get();
     if (currentStep > BOOKING_STEPS.SERVICE_SELECTION) {
+      set({ selectedTimeSlot: null });
       set({ currentStep: currentStep - 1 });
     }
   },
 
   // Service actions
-  setSelectedServices: (services) => set({ selectedServices: services }),
-  addService: (service) => {
-    const { selectedServices } = get();
-    if (!selectedServices.some((s) => s.id === service.id)) {
-      set({ selectedServices: [...selectedServices, service] });
+  setSelectedAppointmentServices: (appointmentServices) => set({ selectedAppointmentServices: appointmentServices }),
+  addAppointmentService: (appointmentService) => {
+    const { selectedAppointmentServices } = get();
+    if (!selectedAppointmentServices.some((s) => s.service == appointmentService.service)) {
+      set({ selectedAppointmentServices: [...selectedAppointmentServices, appointmentService] });
     }
   },
-  removeService: (serviceId) => {
-    const { selectedServices } = get();
-    set({ selectedServices: selectedServices.filter((s) => s.id !== serviceId) });
+  removeAppointmentService: (appointmentService: AppointmentService) => {
+    const { selectedAppointmentServices } = get();
+    set({ selectedAppointmentServices: selectedAppointmentServices.filter((s) => s.service !== appointmentService.service) });
   },
-  toggleService: (service) => {
-    const { selectedServices } = get();
-    const exists = selectedServices.some((s) => s.id === service.id);
-    if (exists) {
-      set({ selectedServices: selectedServices.filter((s) => s.id !== service.id) });
-    } else {
-      set({ selectedServices: [...selectedServices, service] });
-    }
-  },
-
   getTotalDuration: () => {
-    const { selectedServices } = get();
-    return selectedServices.reduce((sum, service) => sum + service.duration_minutes, 0);
+    const { selectedAppointmentServices } = get();
+    return selectedAppointmentServices.reduce((sum, appointmentService) => sum + appointmentService.service_duration, 0);
   },
   getTotalPrice: () => {
-    const { selectedServices } = get();
-    return selectedServices.reduce((sum: number, service: Service) => sum + parseFloat(service.price.toString()), 0);
+    const { selectedAppointmentServices } = get();
+    return selectedAppointmentServices.reduce((sum: number, appointmentService: AppointmentService) => sum + parseFloat(appointmentService.service_price.toString()), 0);
   },
 
   // Staff actions
@@ -159,24 +154,34 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   // Time slot actions
   setSelectedTimeSlot: (timeSlot) => set({ selectedTimeSlot: timeSlot }),
 
-  // Customer info actions
-  setCustomerInfo: (name, phone) => set({ customerName: name, customerPhone: phone }),
-  setCustomerName: (name) => set({ customerName: name }),
-  setCustomerPhone: (phone) => set({ customerPhone: phone }),
+  // Date actions
+  setSelectedDate: (date: Date | null) => set({ selectedDate: date }),
 
+  // Customer info actions
+  setClientInfo: (clientInfo: ClientCreate | null) => set({ clientInfo: clientInfo }),
+  getClientInfo: () => get().clientInfo,
   // Utility actions
   resetBooking: () => set(initialState),
-  canProceedToStep2: () => {
-    const { selectedServices } = get();
-    return selectedServices.length > 0;
+  canProceedToTimeSlotStep: () => {
+    const { selectedAppointmentServices } = get();
+
+
+    return selectedAppointmentServices.length > 0;
   },
-  canProceedToStep3: () => {
-    const { selectedStaff, selectedTimeSlot } = get();
-    return selectedStaff !== undefined && selectedTimeSlot !== undefined;
+  canProceedToCustomerInfoStep: () => {
+    const { selectedTimeSlot, selectedDate } = get();
+
+    if (!selectedDate) {
+      return false;
+    }
+    if (!selectedTimeSlot) {
+      return false;
+    }
+
+    return true;
   },
-  canProceedToStep4: () => {
-    const { customerName, customerPhone } = get();
-    return customerName.trim() !== "" && customerPhone.trim() !== "";
+  canProceedToConfirmationStep: () => {
+    return get().canProceedToTimeSlotStep() && get().canProceedToCustomerInfoStep();
   },
 }));
 

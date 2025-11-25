@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Category, Service } from "@/types/booking";
+import { AppointmentService, Category, Service } from "@/types/booking";
 import { useBookingStore } from "@/store/booking-store";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +19,9 @@ import { businessBookingApi } from "@/lib/api/business-booking.api";
 
 export function ServiceSelection() {
   const {
-    selectedServices,
-    addService,
-    removeService,
+    selectedAppointmentServices,
+    addAppointmentService,
+    removeAppointmentService,
     business,
     categoriesServices,
     setCategoriesServices,
@@ -31,7 +31,6 @@ export function ServiceSelection() {
 
   useEffect(() => {
     const fetchCategoriesServices = async () => {
-      console.log('fetching categories services');
       if (!business) return;
       const response = await businessBookingApi.getCategoriesServices({ business_id: business?.id });
       setCategoriesServices(response.results as Category[]);
@@ -41,12 +40,12 @@ export function ServiceSelection() {
 
 
   // Utility to toggle a service
-  const handleServiceToggle = (service: Service) => {
-    const exists = selectedServices.some((s) => s.id === service.id);
+  const handleServiceToggle = (appointmentService: AppointmentService) => {
+    const exists = selectedAppointmentServices.some((s) => s.service == appointmentService.service);
     if (exists) {
-      removeService(service.id);
+      removeAppointmentService(appointmentService);
     } else {
-      addService(service);
+      addAppointmentService(appointmentService);
     }
   };
 
@@ -87,8 +86,29 @@ export function ServiceSelection() {
                       <ServiceItem
                         key={service.id}
                         service={service}
-                        selected={selectedServices.some((s) => s.id === service.id)}
-                        onSelect={(service) => handleServiceToggle(service)}
+                        selected={selectedAppointmentServices.some((s) => s.service == service.id)}
+                        onSelect={(appointmentService) => {
+                          
+                          handleServiceToggle({
+                            ...appointmentService,
+                            id: new Date().getTime(),
+                            service: service.id,
+                            service_name: service.name,
+                            service_duration: service.duration_minutes,
+                            service_price: service.price,
+                            service_color_code: service.color_code || '',
+                            staff: null,
+                            staff_name: '',
+                            is_staff_request: false,
+                            custom_price: null,
+                            custom_duration: null,
+                            start_at: '',
+                            end_at: '',
+                            is_active: true,
+                            tip_amount: null,
+                            is_draft: false,
+                          });
+                        }}
                       />
                     );
                   })}
