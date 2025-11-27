@@ -44,8 +44,13 @@ export function BookingSummary() {
   const handleConfirmBooking = async () => {
     if (!business) return;
 
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
+      toast.loading("Creating appointment...", {
+        description: "We're preparing your appointment.",
+        position: 'top-center',
+        className: "bg-blue-500 text-white mt-50",
+      });
       const startAt = dayjs(selectedTimeSlot?.start_time)
         .format("YYYY-MM-DDTHH:mm:ssZ");
       const endAt = dayjs(selectedTimeSlot?.start_time)
@@ -61,23 +66,23 @@ export function BookingSummary() {
         notes: createAppointmentPayload?.notes || "",
       }
 
-
       payload.metadata = {
         is_rescheduled: false,
         is_cancelled: false,
         ...payload.metadata,
       }
 
-      console.log("create appointment payload", payload);
-      const response = await businessBookingApi.createAppointmentWithServices(payload);
-      console.log("create appointment response", response);
-
+      await businessBookingApi.createAppointmentWithServices(payload);
+      toast.dismiss();
+      toast.success("Appointment created successfully", {
+        description: "We've sent a confirmation to your phone.",
+        duration: 3000,
+        position: 'top-center',
+      })
       nextStep();
     } catch (error) {
       console.error("Error creating appointment", error);
       toast.error("Error creating appointment");
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -86,8 +91,8 @@ export function BookingSummary() {
       {isLoading && (
         <FullScreenSpinner />
       )}
-      <CardContent className="pt-6">
-        <div className="space-y-2 text-sm">
+      <div className="pt-6 border-b border-gray-200">
+        <div className="space-y-2">
           {/* services */}
           <p className="font-semibold text-gray-900">Services</p>
           {selectedAppointmentServices.map((appointmentService: AppointmentService) => {
@@ -104,104 +109,106 @@ export function BookingSummary() {
             )
           })}
         </div>
-      </CardContent>
-      <CardContent className="pt-1">
-        <div className="space-y-2 text-sm">
+      </div>
+      <div className="pt-6 border-gray-200">
+        <div className="space-y-2">
           <p className="font-semibold text-gray-900">Booking Summary</p>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500 font-semibold">Date</p>
-            <p className="text-sm font-bold">{dayjs(selectedDate).format("dddd, DD MMM YYYY")}</p>
+            <p className="text-gray-500 font-semibold">Date</p>
+            <p className="text-gray-900 font-bold">{dayjs(selectedDate).format("dddd, DD MMM YYYY")}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500 font-semibold">Time</p>
-            <p className="text-sm font-bold">{dayjs(selectedTimeSlot?.start_time).format("h:mm A")}</p>
+            <p className="text-gray-500 font-semibold">Time</p>
+            <p className="text-gray-900 font-bold">{dayjs(selectedTimeSlot?.start_time).format("h:mm A")}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500 font-semibold">Technician</p>
-            <p className="text-sm font-bold">{selectedStaff?.first_name || 'Anyone'}</p>
+            <p className="text-gray-500 font-semibold">Technician</p>
+            <p className="text-gray-900 font-bold">{selectedStaff?.first_name || 'Anyone'}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500 font-semibold">Total Duration</p>
-            <p className="text-sm font-bold">~{getTotalDuration()} minutes</p>
+            <p className="text-gray-500 font-semibold">Total Duration</p>
+            <p className="text-gray-900 font-bold">~{getTotalDuration()} minutes</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500 font-semibold">Total Price</p>
-            <p className="text-sm font-bold">${getTotalPrice()}</p>
+            <p className="text-gray-500 font-semibold">Total Price</p>
+            <p className="text-gray-900 font-bold">${getTotalPrice()}</p>
           </div>
         </div>
-      </CardContent>
-      <Card className="m-2">
-        <CardContent >
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number *</Label>
-            <Input
-              id="phone"
-              type="tel"
-              placeholder="Enter your phone number"
-              defaultValue={clientInfo?.phone || ""}
-              onClick={() => setIsShowCustomerInfoSheet(true)}
-            />
-            <ClientPhoneSheet
-              open={isShowCustomerInfoSheet}
-              onOpenChange={setIsShowCustomerInfoSheet}
-              clientInfo={clientInfo}
-              onChangeClientInfo={(clientInfo: ClientCreate | null) => {
-                alert("onChangeClientInfo: " + JSON.stringify(clientInfo));
-                if (clientInfo) {
-                  setClientInfo(clientInfo)
-                }
-                setIsShowCustomerInfoSheet(false)
-                if (!clientInfo?.first_name || !clientInfo?.last_name) {
-                  setIsShowClientFullNameSheet(true)
-                }
-              }}
-            />
-          </div>
-          <div className="space-y-2 mt-4">
-            <Label htmlFor="name">Full Name *</Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Enter your full name"
-              defaultValue={getClientFullName()}
-              onClick={() => setIsShowClientFullNameSheet(true)}
-            />
-            <ClientFullNameSheet
-              open={isShowClientFullNameSheet}
-              onOpenChange={setIsShowClientFullNameSheet}
-              clientInfo={clientInfo}
-              setClientInfo={setClientInfo}
-              onChangeClientInfo={(clientInfo) => {
+      </div>
+      <div >
+        <div className="space-y-2">
+          <Label htmlFor="phone">Phone Number *</Label>
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="Enter your phone number"
+            defaultValue={clientInfo?.phone || ""}
+            onClick={() => setIsShowCustomerInfoSheet(true)}
+          />
+          <ClientPhoneSheet
+            open={isShowCustomerInfoSheet}
+            onOpenChange={setIsShowCustomerInfoSheet}
+            clientInfo={clientInfo}
+            onChangeClientInfo={(clientInfo: ClientCreate | null) => {
+              if (clientInfo) {
                 setClientInfo(clientInfo)
-              }}
-            />
-          </div>
-          <div className="space-y-2 mt-4">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              rows={3}
-              placeholder="Enter your notes"
-              defaultValue={createAppointmentPayload?.notes || ""}
-              onChange={(e) => {
-                setCreateAppointmentPayload({
-                  ...createAppointmentPayload as CreateAppointmentWithServicesPayload,
-                  notes: e.target.value || "",
-                })
-              }}
-            />
-          </div>
+              }
+              setIsShowCustomerInfoSheet(false)
+              if (!clientInfo?.first_name || !clientInfo?.last_name) {
+                setIsShowClientFullNameSheet(true)
+              }
+            }}
+          />
+        </div>
+        <div className="space-y-2 mt-4">
+          <Label htmlFor="name">Full Name *</Label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Enter your full name"
+            defaultValue={getClientFullName()}
+            onClick={() => setIsShowClientFullNameSheet(true)}
+            disabled={!clientInfo?.phone}
+          />
+          <ClientFullNameSheet
+            open={isShowClientFullNameSheet}
+            onOpenChange={setIsShowClientFullNameSheet}
+            clientInfo={clientInfo}
+            setClientInfo={setClientInfo}
+            onChangeClientInfo={(clientInfo) => {
+              setClientInfo(clientInfo)
+            }}
+          />
+        </div>
+        <div className="space-y-2 mt-4">
+          <Label htmlFor="notes">Notes</Label>
+          <Textarea
+            id="notes"
+            rows={3}
+            placeholder="Enter your notes"
+            defaultValue={createAppointmentPayload?.notes || ""}
+            onChange={(e) => {
+              setCreateAppointmentPayload({
+                ...createAppointmentPayload as CreateAppointmentWithServicesPayload,
+                notes: e.target.value || "",
+              })
+            }}
+          />
+        </div>
 
-          <div className="flex justify-end mt-4 gap-5">
-            <Button className="flex-1 cursor-pointer" onClick={() => previousStep()}>
-              Back
-            </Button>
-            <Button className="flex-1 cursor-pointer" onClick={handleConfirmBooking}>
-              Confirm Booking
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="flex justify-end mt-4 gap-5">
+          <Button className="flex-1 cursor-pointer" onClick={() => previousStep()}>
+            Back
+          </Button>
+          <Button 
+            className="flex-1 cursor-pointer" 
+            onClick={handleConfirmBooking}
+            disabled={!clientInfo?.phone || !getClientFullName()}
+          >
+            Confirm Booking
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

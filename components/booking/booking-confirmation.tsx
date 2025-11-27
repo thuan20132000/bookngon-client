@@ -9,7 +9,7 @@ import { BOOKING_STEPS } from "@/enums/booking.enums";
 import dayjs from "dayjs";
 
 export function BookingConfirmation() {
-  const { 
+  const {
     selectedAppointmentServices,
     selectedTimeSlot,
     selectedStaff,
@@ -63,6 +63,16 @@ export function BookingConfirmation() {
             ))}
           </div>
         </div>
+        {/* Total */}
+        <div className="flex items-center justify-between rounded-lg bg-blue-50 p-4">
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5 text-blue-600" />
+            <div>
+              <p className="text-sm text-gray-600">Total</p>
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-blue-600">${getTotalPrice()}</p>
+        </div>
 
         {/* Time & Date */}
         {selectedTimeSlot && (
@@ -71,7 +81,7 @@ export function BookingConfirmation() {
               <Calendar className="mt-0.5 h-5 w-5 text-blue-600" />
               <div>
                 <p className="text-sm text-gray-600">Date</p>
-                <p className="font-semibold">{dayjs(selectedTimeSlot.start_time).format("MM/DD/YYYY")}</p>
+                <p className="font-semibold">{dayjs(selectedTimeSlot.start_time).format("dddd, DD MMM YYYY")}</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-lg border p-4">
@@ -113,7 +123,7 @@ export function BookingConfirmation() {
             <User className="mt-0.5 h-5 w-5 text-blue-600" />
             <div>
               <p className="text-sm text-gray-600">Name</p>
-              <p className="font-semibold">{getClientInfo()?.first_name} {getClientInfo()?.last_name} {}</p>
+              <p className="font-semibold">{getClientInfo()?.first_name} {getClientInfo()?.last_name} { }</p>
             </div>
           </div>
           <div className="flex items-start gap-3 rounded-lg border p-4">
@@ -125,18 +135,7 @@ export function BookingConfirmation() {
           </div>
         </div>
 
-        {/* Total */}
-        <div className="flex items-center justify-between rounded-lg bg-blue-50 p-4">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-blue-600" />
-            <div>
-              <p className="text-sm text-gray-600">Total Amount</p>
-              <p className="text-xs text-gray-500">Duration: {getTotalDuration()} minutes</p>
-              <p className="text-xs text-gray-500">Price: ${getTotalPrice()}</p>
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-blue-600">${getTotalPrice()}</p>
-        </div>
+
       </div>
 
       {/* Actions */}

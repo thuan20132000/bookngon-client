@@ -236,12 +236,12 @@ export const ClientPhoneSheet = ({ open, onOpenChange, clientInfo, onChangeClien
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" style={{ height: '40%' }}>
+      <SheetContent side="right" >
         {/* Visually hidden dialog title for accessibility */}
-          <SheetTitle>Enter Phone Number</SheetTitle>
+        <SheetTitle>Enter Phone Number</SheetTitle>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number *</Label>
+          <div className="space-y-2 pt-4">
+            <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
             <Input
               id="phone"
               type="tel"
@@ -250,6 +250,7 @@ export const ClientPhoneSheet = ({ open, onOpenChange, clientInfo, onChangeClien
               onChange={(e) => handlePhoneChange(e.target.value)}
               onBlur={() => validatePhone(phone)}
               className={error ? "border-red-500" : ""}
+              autoComplete="off"
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
             <p className="text-xs text-gray-500">
@@ -257,8 +258,8 @@ export const ClientPhoneSheet = ({ open, onOpenChange, clientInfo, onChangeClien
             </p>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button onClick={handleConfirm}>
+        <div className="flex justify-center mt-10">
+          <Button onClick={handleConfirm} className="w-full">
             <CheckCircle className="h-4 w-4" />
             Continue
           </Button>
@@ -326,11 +327,11 @@ export const ClientFullNameSheet = ({ open, onOpenChange, clientInfo, setClientI
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" style={{ height: '40%' }}>
+      <SheetContent side="right" >
         {/* Visually hidden dialog title for accessibility */}
-          <SheetTitle>Enter Full Name</SheetTitle>
+        <SheetTitle>Enter Full Name</SheetTitle>
         <div className="space-y-4">
-          <div className="space-y-2">
+          <div className="space-y-2 pt-4">
             <Label htmlFor="firstName">First Name</Label>
             <Input
               id="firstName"
@@ -350,7 +351,7 @@ export const ClientFullNameSheet = ({ open, onOpenChange, clientInfo, setClientI
               onChange={(e) => setClientInfo({ ...clientInfo, last_name: e.target.value || "" } as ClientCreate)}
             />
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-center mt-10">
             <Button onClick={handleConfirm}>
               <CheckCircle className="h-4 w-4" />
               Confirm
