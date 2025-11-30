@@ -161,7 +161,17 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   setClientInfo: (clientInfo: ClientCreate | null) => set({ clientInfo: clientInfo }),
   getClientInfo: () => get().clientInfo,
   // Utility actions
-  resetBooking: () => set(initialState),
+  resetBooking: () => set({
+    currentStep: BOOKING_STEPS.SERVICE_SELECTION,
+    selectedAppointmentServices: [],
+    selectedStaff: null,
+    selectedTimeSlot: null,
+    selectedDate: null,
+    clientInfo: null,
+    businessStaffs: [],
+    categoriesServices: [],
+    createAppointmentPayload: null,
+  }),
   canProceedToTimeSlotStep: () => {
     const { selectedAppointmentServices } = get();
 
