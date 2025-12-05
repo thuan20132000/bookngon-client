@@ -1,5 +1,4 @@
-import { Service, Staff } from "@/types/booking";
-import { Card, CardContent, CardHeader } from "../ui/card";
+import { Service, Staff } from "@/types/appointment";
 
 
 import { Checkbox } from "@/components/ui/checkbox";

@@ -182,3 +182,7 @@ export interface CreateAppointmentWithServicesPayload extends Partial<Appointmen
   appointment_services: AppointmentService[];
   client_id: number | null;
 }
+
+export interface AppointmentWithServices extends Appointment {
+  appointment_services: AppointmentService[];
+}
