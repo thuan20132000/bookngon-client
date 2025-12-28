@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppointmentService, Category, Service } from "@/types/booking";
+import { AppointmentService, Category, Service } from "@/types/appointment";
 import { useBookingStore } from "@/store/booking-store";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

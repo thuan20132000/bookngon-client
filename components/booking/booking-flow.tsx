@@ -1,14 +1,14 @@
 "use client";
 
 import { useBookingStore } from "@/store/booking-store";
-import { ClientCreate, TimeSlot } from "@/types/booking";
+import { ClientCreate, TimeSlot } from "@/types/appointment";
 import { ServiceSelection } from "./service-selection";
 import { TimeSlotSelection } from "./time-slot-selection";
 import { BookingSummary } from "./booking-summary";
 import { BookingConfirmation } from "./booking-confirmation";
 import { Card, CardContent } from "@/components/ui/card";
 import { BOOKING_STEPS } from "@/enums/booking.enums";
-import { Staff } from "@/types/booking";
+import { Staff } from "@/types/appointment";
 
 // Re-export types for backwards compatibility
 

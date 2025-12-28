@@ -1,4 +1,4 @@
-import { AppointmentService, Client, ClientCreate, Service, Staff } from "@/types/booking";
+import { AppointmentService, Client, ClientCreate, Service, Staff } from "@/types/appointment";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
 import { StaffItem } from "./item";
 import { Check, X } from "lucide-react";

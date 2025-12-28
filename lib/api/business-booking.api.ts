@@ -1,5 +1,5 @@
 import { api } from "./base";
-import { Appointment, Client, ClientCreate, CreateAppointmentWithServicesPayload, Staff, TimeSlot } from "@/types/booking";
+import { Appointment, Client, ClientCreate, CreateAppointmentWithServicesPayload, Staff, TimeSlot } from "@/types/appointment";
 
 interface BusinessBookingParams {
   business_id: number;

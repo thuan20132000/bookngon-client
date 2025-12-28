@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Calendar, Clock, User, Phone, DollarSign, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AppointmentService } from "@/types/booking";
+import { AppointmentService } from "@/types/appointment";
 import { useBookingStore } from "@/store/booking-store";
 import { BOOKING_STEPS } from "@/enums/booking.enums";
 import dayjs from "dayjs";

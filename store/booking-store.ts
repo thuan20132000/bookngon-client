@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Category, ClientCreate, Service, Staff, TimeSlot, AppointmentService, CreateAppointmentWithServicesPayload } from "@/types/booking";
+import { Category, ClientCreate, Service, Staff, TimeSlot, AppointmentService, CreateAppointmentWithServicesPayload } from "@/types/appointment";
 
 import { BOOKING_STEPS } from "@/enums/booking.enums";
 import { Business } from "@/types/business";

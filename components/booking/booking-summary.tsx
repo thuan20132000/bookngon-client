@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { ClientFullNameSheet, ClientPhoneSheet } from "../shared/sheet";
-import { AppointmentService, ClientCreate, CreateAppointmentWithServicesPayload } from "@/types/booking";
+import { AppointmentService, ClientCreate, CreateAppointmentWithServicesPayload } from "@/types/appointment";
 import { useBookingStore } from "@/store/booking-store";
 import dayjs from "dayjs";
 import { Textarea } from "../ui/textarea";

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useBookingStore } from "@/store/booking-store";
-import { TimeSlot } from "@/types/booking";
+import { TimeSlot } from "@/types/appointment";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
