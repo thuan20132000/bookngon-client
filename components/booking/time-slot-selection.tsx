@@ -82,6 +82,8 @@ export function TimeSlotSelection() {
         service_ids: selectedAppointmentServices.map((appointmentService) => appointmentService.service),
         duration: getTotalDuration(),
         staff_id: selectedStaff?.id,
+        interval_minutes: business?.settings?.time_slot_interval,
+
       };
       const response = await businessBookingApi.getTimeSlots(timeSlotsParams);
       setTimeSlots(response.results!);

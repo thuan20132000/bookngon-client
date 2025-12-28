@@ -47,8 +47,8 @@ export interface ApiRequestConfig extends AxiosRequestConfig {
 // const API_BASE_URL = 'http://10.128.76.12:8000/api';
 // const API_BASE_URL = 'http://10.128.76.231:8000/api';
 
-// const API_BASE_URL = 'https://bookngonv1.snapsbooking.com/api';
-const API_BASE_URL = 'http://127.0.0.1:8003/api';
+const API_BASE_URL = 'https://bookngonv1.snapsbooking.com/api';
+// const API_BASE_URL = 'http://127.0.0.1:8003/api';
 
 
 

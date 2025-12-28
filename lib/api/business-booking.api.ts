@@ -11,6 +11,7 @@ export interface TimeSlotsParams {
   staff_id?: number;
   service_ids: number[];
   duration: number;
+  interval_minutes?: number;
 };
 
 export interface SearchClientByPhoneParams {
@@ -21,6 +22,12 @@ export interface SearchClientByPhoneParams {
 
 
 export const businessBookingApi = {
+
+  getBusinessInfo: async (params: BusinessBookingParams) => {
+    const response = await api.get('/business-booking/business-info', { params });
+    return response.data;
+  },
+
   getBusinessBooking: async () => {
     const response = await api.get('/business/booking');
     return response.data;

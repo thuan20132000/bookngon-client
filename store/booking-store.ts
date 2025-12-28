@@ -2,15 +2,18 @@ import { create } from "zustand";
 import { Category, ClientCreate, Service, Staff, TimeSlot, AppointmentService, CreateAppointmentWithServicesPayload } from "@/types/appointment";
 
 import { BOOKING_STEPS } from "@/enums/booking.enums";
-import { Business } from "@/types/business";
+import { Business, BusinessInfo } from "@/types/business";
+import { businessBookingApi } from "@/lib/api/business-booking.api";
 
 
 export interface BookingState {
   createAppointmentPayload: CreateAppointmentWithServicesPayload | null;
   setCreateAppointmentPayload: (payload: CreateAppointmentWithServicesPayload | null) => void;
   // Business
-  business?: Business | null;
-  setBusiness: (business: Business | null) => void;
+  business?: BusinessInfo | null;
+  setBusiness: (business: BusinessInfo | null) => void;
+  businessInfo?: BusinessInfo | null;
+  setBusinessInfo: (businessInfo: BusinessInfo | null) => void;
   // Step management
   currentStep: BOOKING_STEPS;
   // Booking data
@@ -56,7 +59,7 @@ export interface BookingState {
   resetBooking: () => void;
   canProceedToTimeSlotStep: () => boolean;
   canProceedToCustomerInfoStep: () => boolean;
-
+  initializeBusiness: (businessId: number) => Promise<void>;
 }
 
 const initialState = {
@@ -68,31 +71,28 @@ const initialState = {
   clientInfo: null,
   businessStaffs: [],
   categoriesServices: [],
-  business: {
-    id: 1,
-    name: "Style Studio Hair Salon 1",
-    business_type: 1,
-    business_type_name: "Hair Salon",
-    phone_number: "+1-555-0123",
-    email: "info@stylestudio.com",
-    website: "https://stylestudio.com",
-    address: "123 Main Street 2",
-    city: "Toronto",
-    state_province: "ON",
-    postal_code: "M5V 3A8",
-    country: "Canada",
-    timezone: "America/Toronto",
-    status: "active",
-    description: "Professional hair salon offering cutting-edge styles and treatments",
-    logo: null,
-    created_at: "2025-11-19T06:42:03.424337Z",
-    updated_at: "2025-11-23T06:29:31.264507Z"
-  },
+  business: null,
   createAppointmentPayload: null,
 };
 
 export const useBookingStore = create<BookingState>((set, get) => ({
   ...initialState,
+
+  // Initialize business
+  initializeBusiness: async (businessId: number) => {
+    try {
+      const response = await businessBookingApi.getBusinessInfo({ business_id: businessId });
+      if (response.success) {
+        const businessInfo = response.results as BusinessInfo;
+        set({ 
+          business: businessInfo,
+          businessInfo: businessInfo
+        });
+      }
+    } catch (error) {
+      console.error("Error initializing business", error);
+    }
+  },
 
   // Create appointment payload actions
   setCreateAppointmentPayload: (payload: CreateAppointmentWithServicesPayload | null) => set({
@@ -100,8 +100,10 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   }),
 
   // Business actions
-  setBusiness: (business) => set({ business: business }),
+  setBusiness: (business: BusinessInfo | null) => set({ business: business }),
   getBusiness: () => get().business,
+  setBusinessInfo: (businessInfo) => set({ businessInfo: businessInfo }),
+  getBusinessInfo: () => get().businessInfo,
 
   // Business staff actions
   setBusinessStaffs: (staffs) => set({ businessStaffs: staffs }),

@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { AppointmentService, Category, Service } from "@/types/appointment";
 import { useBookingStore } from "@/store/booking-store";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+
 
 // You may want to use your own Accordion component or from your design system:
 import {
