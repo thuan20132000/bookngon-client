@@ -14,7 +14,6 @@ const HomeContent = () => {
   const query = useSearchParams()
   const businessId = query.get('business_id')
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const loadBusiness = async () => {
       setLoading(true);
