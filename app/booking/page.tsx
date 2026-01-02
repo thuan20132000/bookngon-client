@@ -1,13 +1,13 @@
 "use client";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { NavigationBar } from "@/components/booking/navigation-bar";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { BookingState, useBookingStore } from "@/store/booking-store";
 
-export default function BookingPage() {
+const BookingPageContent = () => {
 
   const { initializeBusiness, businessInfo } = useBookingStore((state: BookingState) => state);
   const query = useSearchParams()
@@ -46,3 +46,11 @@ export default function BookingPage() {
     </div>
   );
 }
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BookingPageContent />
+    </Suspense>
+  );
+};
