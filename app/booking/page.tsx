@@ -16,8 +16,11 @@ const BookingPageContent = () => {
 
   useEffect(() => {
     const loadBusiness = async () => {
+      if (!businessId) {
+        return;
+      }
       setLoading(true);
-      await initializeBusiness(Number(businessId));
+      await initializeBusiness(businessId);
       setLoading(false);
     };
     if (businessId && businessId != businessInfo?.id.toString()) {

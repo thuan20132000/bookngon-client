@@ -95,7 +95,7 @@ export interface ClientCreate {
   is_active: boolean;
   is_vip: boolean;
   notes: string;
-  primary_business_id: number;
+  primary_business_id: string;
   date_of_birth: string | null;
 }
 
@@ -178,7 +178,7 @@ export interface AppointmentService {
 }
 
 export interface CreateAppointmentWithServicesPayload extends Partial<Appointment> {
-  business_id: number;
+  business_id: string;
   appointment_services: AppointmentService[];
   client_id: number | null;
 }

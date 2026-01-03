@@ -77,7 +77,7 @@ export function TimeSlotSelection() {
       if (!business || !selectedDate) return;
 
       const timeSlotsParams: TimeSlotsParams = {
-        business_id: business?.id,
+        business_id: business?.id.toString() || '',
         date: dayjs(selectedDate).format("YYYY-MM-DD"),
         service_ids: selectedAppointmentServices.map((appointmentService) => appointmentService.service),
         duration: getTotalDuration(),

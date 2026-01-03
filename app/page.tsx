@@ -16,8 +16,11 @@ const HomeContent = () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const loadBusiness = async () => {
+      if (!businessId) {
+        return;
+      }
       setLoading(true);
-      await initializeBusiness(Number(businessId));
+      await initializeBusiness(businessId); 
       setLoading(false);
     };
     loadBusiness();

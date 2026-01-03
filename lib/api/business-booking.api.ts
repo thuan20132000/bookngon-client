@@ -2,11 +2,11 @@ import { api } from "./base";
 import { Appointment, Client, ClientCreate, CreateAppointmentWithServicesPayload, Staff, TimeSlot } from "@/types/appointment";
 
 interface BusinessBookingParams {
-  business_id: number;
+  business_id: string;
 };
 
 export interface TimeSlotsParams {
-  business_id: number;
+  business_id: string;
   date: string;
   staff_id?: number;
   service_ids: number[];
@@ -15,7 +15,7 @@ export interface TimeSlotsParams {
 };
 
 export interface SearchClientByPhoneParams {
-  business_id: number;
+  business_id: string;
   phone: string;
 };
 

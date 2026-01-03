@@ -24,7 +24,7 @@ export const StaffRequestSheet = ({ open, onOpenChange, onStaffSelect }: StaffRe
   useEffect(() => {
     const fetchBusinessTechnicians = async () => {
       if (!business) return;
-      const response = await businessBookingApi.getBusinessTechnicians({ business_id: business?.id });
+      const response = await businessBookingApi.getBusinessTechnicians({ business_id: business?.id.toString() || '' });
       setBusinessTechnicians(response.results!);
     };
     fetchBusinessTechnicians();
@@ -165,7 +165,7 @@ export const ClientPhoneSheet = ({ open, onOpenChange, clientInfo, onChangeClien
     if (!phone || !business) return;
     try {
       const response = await businessBookingApi.getClientByPhone({
-        business_id: business.id,
+        business_id: business.id.toString(),
         phone: phone
       });
       return response.results;
@@ -213,7 +213,7 @@ export const ClientPhoneSheet = ({ open, onOpenChange, clientInfo, onChangeClien
         is_active: true,
         is_vip: false,
         notes: "",
-        primary_business_id: business?.id || 0,
+        primary_business_id: business?.id.toString() || '',
         date_of_birth: null,
       });
       onOpenChange(false);
@@ -227,7 +227,7 @@ export const ClientPhoneSheet = ({ open, onOpenChange, clientInfo, onChangeClien
         is_active: true,
         is_vip: false,
         notes: "",
-        primary_business_id: business?.id || 0,
+        primary_business_id: business?.id.toString() || '',
         date_of_birth: null,
       });
       onOpenChange(false);
@@ -294,7 +294,7 @@ export const ClientFullNameSheet = ({ open, onOpenChange, clientInfo, setClientI
         is_active: true,
         is_vip: false,
         notes: "",
-        primary_business_id: business.id,
+        primary_business_id: business.id.toString(),
         date_of_birth: null,
         id: clientInfo?.id,
       });

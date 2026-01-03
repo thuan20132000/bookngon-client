@@ -32,6 +32,6 @@ export interface ReviewFilters {
   is_visible?: boolean;
   is_verified?: boolean;
   appointment_date?: string;
-  business_id?: number;
+  business_id?: string;
   reviewed_date?: string;
 }

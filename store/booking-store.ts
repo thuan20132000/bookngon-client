@@ -59,7 +59,7 @@ export interface BookingState {
   resetBooking: () => void;
   canProceedToTimeSlotStep: () => boolean;
   canProceedToCustomerInfoStep: () => boolean;
-  initializeBusiness: (businessId: number) => Promise<void>;
+  initializeBusiness: (businessId: string) => Promise<void>;
 }
 
 const initialState = {
@@ -79,7 +79,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   ...initialState,
 
   // Initialize business
-  initializeBusiness: async (businessId: number) => {
+  initializeBusiness: async (businessId: string) => {
     try {
       const response = await businessBookingApi.getBusinessInfo({ business_id: businessId });
       if (response.success) {

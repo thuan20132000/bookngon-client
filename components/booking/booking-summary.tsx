@@ -61,7 +61,7 @@ export function BookingSummary() {
         appointment_services: selectedAppointmentServices,
         start_at: startAt,
         end_at: endAt,
-        business_id: business?.id,
+        business_id: business?.id.toString() || '',
         client_id: clientInfo?.id || null,
         notes: createAppointmentPayload?.notes || "",
       }
