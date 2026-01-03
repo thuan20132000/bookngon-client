@@ -89,7 +89,7 @@ export const StaffItem: React.FC<StaffItemProps> = ({
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h3 className="text-lg font-medium">{staff.first_name} {staff.last_name}</h3>
+            <h3 className="text-lg font-medium">{staff.first_name}</h3>
             <div className="mt-1 flex flex-wrap gap-1">
               <span className="text-xs text-gray-500">{staff.role_name}</span>
             </div>
