@@ -71,7 +71,7 @@ export interface BusinessOnlineBooking {
 }
 
 export interface BusinessInfo {
-  id: number
+  id: string
   name: string
   phone_number: string
   email: string
