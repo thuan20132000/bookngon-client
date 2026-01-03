@@ -39,7 +39,7 @@ export const StaffRequestSheet = ({ open, onOpenChange, onStaffSelect }: StaffRe
         <SheetDescription>
           Please select the staff you would like to request.
         </SheetDescription>
-        <div className="h-full overflow-y-auto flex flex-col gap-2">
+        <div className="h-full overflow-y-auto flex flex-col gap-2 pb-50">
           {businessTechnicians?.map((staff) => (
             <StaffItem
               key={staff.id}
