@@ -107,7 +107,7 @@ const HomeContent = () => {
           </div>
 
           {/* CTA Button */}
-          <div className="flex justify-center gap-4 mb-12">
+          <div className="flex flex-col justify-center gap-4 mb-12">
             <div className="flex justify-center">
               <Link href={`/booking?business_id=${businessInfo.id}`}>
                 <Button size="lg" className="h-12 px-8 text-base">
@@ -117,7 +117,12 @@ const HomeContent = () => {
 
             </div>
             <div className="flex justify-center">
-              <Button variant="outline" size="lg" className="h-12 px-8 text-base" onClick={() => setOpenClientPhoneSheet(true)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-12 px-8 text-base underline"
+                onClick={() => setOpenClientPhoneSheet(true)}
+              >
                 <Search className="h-4 w-4" />
                 Find your appointment
               </Button>
