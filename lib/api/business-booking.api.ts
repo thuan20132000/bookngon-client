@@ -1,5 +1,5 @@
-import { api } from "./base";
-import { Appointment, Client, ClientCreate, CreateAppointmentWithServicesPayload, Staff, TimeSlot } from "@/types/appointment";
+import { api, apiHelpers } from "./base";
+import { Appointment, AppointmentWithServices, Client, ClientCreate, CreateAppointmentWithServicesPayload, Staff, TimeSlot } from "@/types/appointment";
 
 interface BusinessBookingParams {
   business_id: string;
@@ -19,7 +19,22 @@ export interface SearchClientByPhoneParams {
   phone: string;
 };
 
+export interface GetClientParams {
+  business_id: string;
+  client_id: string;
+};
 
+export interface GetClientAppointmentsParams {
+  business_id: string;
+  client_id: string;
+};
+
+
+export interface CancelAppointmentParams {
+  business_id: string;
+  client_id: string;
+  appointment_id: number;
+};
 
 export const businessBookingApi = {
 
@@ -65,6 +80,21 @@ export const businessBookingApi = {
 
   createAppointmentWithServices: async (payload: CreateAppointmentWithServicesPayload) => {
     const response = await api.post<Appointment>('/business-booking/appointment/', payload);
+    return response.data;
+  },
+
+  getClient: async (params: GetClientParams) => {
+    const response = await api.get<Client>(`/business-booking/client-by-id/`, { params });
+    return response.data;
+  },
+
+  getClientAppointments: async (params: GetClientAppointmentsParams) => {
+    const response = await api.get<AppointmentWithServices[]>(`/business-booking/upcoming-appointments/`, { params });
+    return response.data;
+  },
+
+  cancelAppointment: async (data: CancelAppointmentParams) => {
+    const response = await api.post<Appointment>(`/business-booking/cancel-appointment/`, data);
     return response.data;
   },
 };

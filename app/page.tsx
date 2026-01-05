@@ -6,21 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessInfo } from "@/types/business";
 import Link from "next/link";
-import { Phone, Mail, MapPin, Globe, Clock } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { Phone, Mail, MapPin, Globe, Clock, Search } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ClientPhoneSheet } from "@/components/shared/sheet";
+import { ClientCreate } from "@/types/appointment";
 
 const HomeContent = () => {
   const { initializeBusiness, businessInfo } = useBookingStore((state: BookingState) => state);
   const query = useSearchParams()
   const businessId = query.get('business_id')
   const [loading, setLoading] = useState(true);
+  const [openClientPhoneSheet, setOpenClientPhoneSheet] = useState(false);
+  const [clientInfo, setClientInfo] = useState<ClientCreate | null>(null);
+  const router = useRouter();
+
   useEffect(() => {
     const loadBusiness = async () => {
       if (!businessId) {
         return;
       }
       setLoading(true);
-      await initializeBusiness(businessId); 
+      await initializeBusiness(businessId);
       setLoading(false);
     };
     loadBusiness();
@@ -101,12 +107,21 @@ const HomeContent = () => {
           </div>
 
           {/* CTA Button */}
-          <div className="mb-12 flex justify-center">
-            <Link href={`/booking?business_id=${businessInfo.id}`}>
-              <Button size="lg" className="h-12 px-8 text-base">
-                Book an Appointment
+          <div className="flex justify-center gap-4 mb-12">
+            <div className="flex justify-center">
+              <Link href={`/booking?business_id=${businessInfo.id}`}>
+                <Button size="lg" className="h-12 px-8 text-base">
+                  Book an Appointment
+                </Button>
+              </Link>
+
+            </div>
+            <div className="flex justify-center">
+              <Button variant="outline" size="lg" className="h-12 px-8 text-base" onClick={() => setOpenClientPhoneSheet(true)}>
+                <Search className="h-4 w-4" />
+                Find your appointment
               </Button>
-            </Link>
+            </div>
           </div>
 
           {/* Information Cards */}
@@ -142,7 +157,7 @@ const HomeContent = () => {
                 {businessInfo.address && (
                   <div className="flex items-start gap-3">
                     <MapPin className="mt-0.5 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-                    <address 
+                    <address
                       className="not-italic text-sm text-zinc-700 dark:text-zinc-300"
                       title={fullAddress}
                       aria-label={fullAddress}
@@ -151,7 +166,7 @@ const HomeContent = () => {
                     </address>
                   </div>
                 )}
-               
+
               </CardContent>
             </Card>
 
@@ -188,7 +203,7 @@ const HomeContent = () => {
                 <CardTitle>About</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-              
+
                 {businessInfo.online_booking?.policy && (
                   <div>
                     <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
@@ -204,6 +219,20 @@ const HomeContent = () => {
           </div>
         </div>
       </div>
+
+      <ClientPhoneSheet
+        open={openClientPhoneSheet}
+        onOpenChange={setOpenClientPhoneSheet}
+        clientInfo={clientInfo}
+        onChangeClientInfo={(clientInfo) => {
+          setClientInfo(clientInfo);
+          setOpenClientPhoneSheet(false);
+          if (clientInfo) {
+            console.log("clientInfo: " + JSON.stringify(clientInfo));
+            router.push(`/client?client_id=${clientInfo.id}&business_id=${businessInfo.id}`);
+          }
+        }}
+      />
     </div>
   );
 }
