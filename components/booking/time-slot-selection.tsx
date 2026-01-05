@@ -37,9 +37,13 @@ function groupTimeSlotsByTimeOfDay(timeSlots: TimeSlot[]): {
     evening: [],
   };
 
+  const now = dayjs().add(30,'minutes');
   timeSlots.forEach((slot) => {
-    const timeOfDay = getTimeOfDay(slot.start_time);
-    grouped[timeOfDay].push(slot);
+    // Only include slots starting after the current time
+    if (dayjs(slot.start_time).isAfter(now)) {
+      const timeOfDay = getTimeOfDay(slot.start_time);
+      grouped[timeOfDay].push(slot);
+    }
   });
 
   // Sort each group by start time
