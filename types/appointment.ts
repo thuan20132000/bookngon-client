@@ -153,6 +153,7 @@ export interface Appointment {
   end_at: string; // ISO datetime, with timezone
   metadata: Record<string, unknown>;
   payment_status: PaymentStatusType;
+  business_google_review_url?: string | null;
 }
 
 export interface AppointmentService {

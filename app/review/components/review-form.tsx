@@ -1,28 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { Star, Calendar, Clock, User, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreateReviewPayload } from "@/types/review";
 import { reviewApi } from "@/lib/api/review.api";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { AxiosError } from "axios";
+import { AppointmentWithServices } from "@/types/appointment";
+import { businessBookingApi } from "@/lib/api/business-booking.api";
+import dayjs from "dayjs";
+import { Badge } from "@/components/ui/badge";
 
 interface ReviewFormProps {
-  appointmentId: number;
+  appointmentId: string;
+  businessId: string;
   onSubmitSuccess?: () => void;
 }
 
-export function ReviewForm({ appointmentId, onSubmitSuccess }: ReviewFormProps) {
+export function ReviewForm({ appointmentId, businessId, onSubmitSuccess }: ReviewFormProps) {
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [appointment, setAppointment] = useState<AppointmentWithServices | null>(null);
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      const response = await businessBookingApi.getAppointment({
+        appointment_id: appointmentId,
+        business_id: businessId || ""
+      });
+      console.log("response: ", response);
+      if (response.success && response.results) {
+        setAppointment(response.results as AppointmentWithServices);
+      }
+
+    };
+
+    if (appointmentId) {
+      fetchAppointment();
+    }
+
+  }, [appointmentId, businessId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +73,8 @@ export function ReviewForm({ appointmentId, onSubmitSuccess }: ReviewFormProps) 
       });
 
       await reviewApi.createReview(payload);
-      
+
+
       toast.dismiss();
       toast.success("Review submitted successfully", {
         description: "Thank you for your feedback!",
@@ -63,14 +88,49 @@ export function ReviewForm({ appointmentId, onSubmitSuccess }: ReviewFormProps) 
       setHoveredRating(0);
 
       onSubmitSuccess?.();
+
+      if (rating >= 4) {
+        // show google review popup
+
+        // show google review popup
+        if (appointment?.business_google_review_url) {
+          toast.info("Please leave us Review on Google", {
+            description: "We appreciate your feedback and would love to hear from you. Thank you!",
+            position: 'bottom-center',
+            duration: Infinity,
+            icon: <Star className="w-4 h-4" />,
+            action: {
+              label: "Leave Review",
+              onClick: () => {
+                window.open(appointment?.business_google_review_url || "", '_blank');
+              },
+            },
+            style: {
+              backgroundColor: "var(--background)",
+              color: "var(--foreground)",
+              borderRadius: "var(--radius)",
+              border: "1px solid var(--border)",
+              padding: "1rem",
+              fontSize: "1rem",
+              fontWeight: "bold",
+              textAlign: "center",
+              textDecoration: "none",
+              textTransform: "uppercase",
+              marginTop: "50%",
+            },
+          });
+          return;
+        }
+      }
+
     } catch (error: unknown) {
       console.error("Error submitting review", error);
       toast.dismiss();
-      
-      const errorMessage = error instanceof AxiosError ? error.response?.data?.message || 
-                          error.response?.data?.errors?.non_field_errors?.[0] ||
-                          "Failed to submit review. Please try again." :
-                          "Failed to submit review. Please try again.";
+
+      const errorMessage = error instanceof AxiosError ? error.response?.data?.message ||
+        error.response?.data?.errors?.non_field_errors?.[0] ||
+        "Failed to submit review. Please try again." :
+        "Failed to submit review. Please try again.";
       toast.error("Error submitting review", {
         description: errorMessage,
         duration: 5000,
@@ -88,10 +148,87 @@ export function ReviewForm({ appointmentId, onSubmitSuccess }: ReviewFormProps) 
       <CardHeader>
         <CardTitle>Write a Review</CardTitle>
         <CardDescription>
-          Share your experience and help others make informed decisions.
+          Share your experience with our services and help our services to improve.
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Appointment Details Section */}
+        {appointment && (
+          <div className="mb-6 p-4 bg-muted/50 rounded-lg border space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div className="flex items-start gap-2">
+                <Building2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-muted-foreground text-xs">Business</p>
+                  <p className="font-medium">{appointment.business_name}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-muted-foreground text-xs">Date</p>
+                  <p className="font-medium">
+                    {dayjs(appointment.appointment_date).format("MMM DD, YYYY")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-muted-foreground text-xs">Time</p>
+                  <p className="font-medium">
+                    {dayjs(appointment.start_at).format("h:mm A")} - {dayjs(appointment.end_at).format("h:mm A")}
+                  </p>
+                </div>
+              </div>
+
+              {appointment.client_name && (
+                <div className="flex items-start gap-2">
+                  <User className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-muted-foreground text-xs">Client</p>
+                    <p className="font-medium">{appointment.client_name}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {appointment.appointment_services && appointment.appointment_services.length > 0 && (
+              <>
+                <div className="border-t my-3" />
+                <div>
+                  <p className="text-muted-foreground text-xs mb-2">Services</p>
+                  <div className="flex flex-wrap gap-2">
+                    {appointment.appointment_services.map((service) => (
+                      <Badge
+                        key={service.id}
+                        variant="secondary"
+                        className="text-xs"
+                      >
+                        {service.service_name}
+                        {service.service_duration && (
+                          <span className="text-muted-foreground ml-1">
+                            ({service.service_duration} min)
+                          </span>
+                        )}
+                        {service.staff_name && (
+                          <span className="text-muted-foreground ml-1">
+                            - {service.staff_name}
+                          </span>
+                        )}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Rating Section */}
           <div className="space-y-2">
@@ -148,7 +285,8 @@ export function ReviewForm({ appointmentId, onSubmitSuccess }: ReviewFormProps) 
             <Button
               type="submit"
               disabled={isSubmitting || rating === 0}
-              className="min-w-32"
+              className="w-full cursor-pointer"
+              size="lg"
             >
               {isSubmitting ? (
                 <>

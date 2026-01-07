@@ -36,6 +36,11 @@ export interface CancelAppointmentParams {
   appointment_id: number;
 };
 
+export interface GetAppointmentParams {
+  appointment_id: string;
+  business_id: string;
+};
+
 export const businessBookingApi = {
 
   getBusinessInfo: async (params: BusinessBookingParams) => {
@@ -95,6 +100,11 @@ export const businessBookingApi = {
 
   cancelAppointment: async (data: CancelAppointmentParams) => {
     const response = await api.post<Appointment>(`/business-booking/cancel-appointment/`, data);
+    return response.data;
+  },
+
+  getAppointment: async (params: GetAppointmentParams) => {
+    const response = await api.get<AppointmentWithServices>(`/business-booking/appointment/`, { params });
     return response.data;
   },
 };

@@ -16,6 +16,7 @@ const ReviewPageContent = () => {
   const query = useSearchParams();
   const router = useRouter();
   const appointmentId = query.get("appointment_id");
+  const businessId = query.get("business_id");
   
   const [existingReview, setExistingReview] = useState<Review | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,8 +68,8 @@ const ReviewPageContent = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button onClick={() => router.back()} variant="outline">
-                Go Back
+              <Button onClick={() => router.push(`/booking?business_id=${businessId}`)} variant="default">
+                Book Another Appointment
               </Button>
             </CardContent>
           </Card>
@@ -129,8 +130,8 @@ const ReviewPageContent = () => {
                   )}
                 </div>
               )}
-              <Button onClick={() => router.back()} variant="outline">
-                Go Back
+              <Button onClick={() => router.push(`/booking?business_id=${businessId}`)} variant="default">
+                Book Next Appointment
               </Button>
             </CardContent>
           </Card>
@@ -143,7 +144,8 @@ const ReviewPageContent = () => {
     <div className="min-h-screen bg-gray-50 py-8 pb-16">
       <div className="container mx-auto max-w-4xl px-4">
         <ReviewForm 
-          appointmentId={Number(appointmentId)} 
+          appointmentId={appointmentId} 
+          businessId={businessId || ""}
           onSubmitSuccess={handleSubmitSuccess}
         />
       </div>

@@ -16,7 +16,7 @@ export interface Review {
 }
 
 export interface CreateReviewPayload {
-  appointment: number;
+  appointment: string;
   rating: number;
   comment?: string | null;
 }
