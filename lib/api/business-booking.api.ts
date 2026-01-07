@@ -104,7 +104,7 @@ export const businessBookingApi = {
   },
 
   getAppointment: async (params: GetAppointmentParams) => {
-    const response = await api.get<AppointmentWithServices>(`/business-booking/appointment/`, { params });
+    const response = await api.get<AppointmentWithServices>(`/business-booking/client-appointment/`, { params });
     return response.data;
   },
 };
