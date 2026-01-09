@@ -70,6 +70,7 @@ export function BookingSummary() {
         is_rescheduled: false,
         is_cancelled: false,
         is_send_confirmation_sms:true,
+        is_send_reminder_sms:true,
         ...payload.metadata,
       }
 
