@@ -114,7 +114,11 @@ const HomeContent = () => {
                   Book an Appointment
                 </Button>
               </Link>
-
+              <Link href={`/gifts?business_id=${businessInfo.id}`}>
+                <Button size="lg" className="h-12 px-8 text-base">
+                  Purchase a Gift Card
+                </Button>
+              </Link>
             </div>
             <div className="flex justify-center">
               <Button
