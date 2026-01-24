@@ -4,7 +4,7 @@ import { useGiftCardStore } from "@/store/gift-card-store";
 import { AmountSelection } from "./amount-selection";
 import { CustomerInfo } from "./customer-info";
 import { PaymentForm } from "./payment-form";
-import { GiftCardConfirmation } from "./gift-card-confirmation";
+// import { GiftCardConfirmation } from "./gift-card-confirmation";
 import { Card, CardContent } from "@/components/ui/card";
 import { GIFT_CARD_STEPS } from "@/enums/gift-card.enums";
 
@@ -19,8 +19,8 @@ export function GiftCardFlow() {
         return <CustomerInfo />;
       case GIFT_CARD_STEPS.PAYMENT:
         return <PaymentForm />;
-      case GIFT_CARD_STEPS.CONFIRMATION:
-        return <GiftCardConfirmation />;
+      // case GIFT_CARD_STEPS.CONFIRMATION:
+      //   return <GiftCardConfirmation />;
       default:
         return <AmountSelection />;
     }

@@ -19,16 +19,8 @@ export const giftCardApi = {
   // Verify a checkout session
   verifyCheckoutSession: async (sessionId: string, businessId: string) => {
     const response = await api.get(
-      `/gift-card-checkouts/verify-session/`,
+      `/gift-card-checkouts/`,
       { params: { business_id: businessId, session_id: sessionId } }
-    );
-    return response.data;
-  },
-  // Create a gift card purchase and get payment intent
-  createGiftCardPurchase: async (payload: CreateGiftCardPurchasePayload) => {
-    const response = await api.post<GiftCardPaymentIntent>(
-      '/online-payment-intent/',
-      payload
     );
     return response.data;
   },
@@ -36,7 +28,7 @@ export const giftCardApi = {
   // Create a gift card checkout session
   createGiftCardCheckoutSession: async (payload: CreateGiftCardCheckoutSessionPayload) => {
     const response = await api.post<GiftCardCheckoutSession>(
-      '/gift-card-checkouts/checkout-session/',
+      '/gift-card-checkouts/',
       payload
     );
     return response.data;

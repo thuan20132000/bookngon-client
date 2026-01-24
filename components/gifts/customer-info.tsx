@@ -124,10 +124,10 @@ export function CustomerInfo() {
             <Label htmlFor="customer-message">Message</Label>
             <Textarea
               id="customer-message"
-              placeholder="Enter your message"
+              placeholder="Enter a message for the recipient, e.g. 'Happy Birthday!' or 'Thank you for your support!'"
               value={message || ""}
               onChange={(e) => setMessage(e.target.value)}
-              className="mt-2"
+              className="mt-2 resize-none"
             />
           </div>
 
