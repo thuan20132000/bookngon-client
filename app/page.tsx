@@ -125,7 +125,7 @@ const HomeContent = () => {
                   disabled
                 >
                   <Gift className="h-5 w-5 mr-2 text-yellow-500" />
-                  Buy a Gift Card (Coming Soon)
+                  Buy a Gift Card
                 </Button>
               </Link>
             </div>
