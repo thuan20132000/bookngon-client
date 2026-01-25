@@ -67,7 +67,7 @@ const GiftCardPageContent = () => {
         </div>
 
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Buy a Gift Card</h1>
+          <h3 className="text-3xl font-bold text-gray-900 mb-2">Buy a Gift Card</h3>
         </div>
         <GiftCardFlow />
       </div>
