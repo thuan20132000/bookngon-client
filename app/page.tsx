@@ -122,9 +122,10 @@ const HomeContent = () => {
                   size="lg"
                   variant="outline"
                   className="w-full h-14 px-8 text-base flex items-center justify-center gap-2 border-2 border-yellow-400 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-500 hover:text-yellow-700 cursor-pointer"
+                  disabled
                 >
                   <Gift className="h-5 w-5 mr-2 text-yellow-500" />
-                  Buy a Gift Card
+                  Buy a Gift Card (Coming Soon)
                 </Button>
               </Link>
             </div>
