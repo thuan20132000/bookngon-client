@@ -56,11 +56,6 @@ export function CustomerInfo() {
     }
   }
 
-  useEffect(() => {
-    setRecipientEmail("ethantruong1602@gmail.com");
-    setRecipientName("Thuan Truong");
-  }, []);
-
   return (
     <div className="space-y-6">
       <CardHeader>
