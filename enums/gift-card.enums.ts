@@ -1,0 +1,6 @@
+export enum GIFT_CARD_STEPS {
+  AMOUNT_SELECTION = 0,
+  CUSTOMER_INFO = 1,
+  PAYMENT = 2,
+  CONFIRMATION = 3,
+}

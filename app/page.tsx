@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessInfo } from "@/types/business";
 import Link from "next/link";
-import { Phone, Mail, MapPin, Globe, Clock, Search } from "lucide-react";
+import { Phone, Mail, MapPin, Globe, Clock, Search, Gift } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ClientPhoneSheet } from "@/components/shared/sheet";
 import { ClientCreate } from "@/types/appointment";
@@ -106,24 +106,37 @@ const HomeContent = () => {
             )}
           </div>
 
-          {/* CTA Button */}
-          <div className="flex flex-col justify-center gap-4 mb-12">
-            <div className="flex justify-center">
-              <Link href={`/booking?business_id=${businessInfo.id}`}>
-                <Button size="lg" className="h-12 px-8 text-base">
+          {/* CTA Section */}
+          <div className="flex flex-col items-center gap-6 mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+              <Link href={`/booking?business_id=${businessInfo.id}`} className="flex-1">
+                <Button
+                  size="lg"
+                  className="w-full h-14 px-8 text-base flex items-center justify-center gap-2 cursor-pointer"
+                >
                   Book an Appointment
                 </Button>
               </Link>
-
+              <Link href={`/gifts?business_id=${businessInfo.id}`} className="flex-1">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full h-14 px-8 text-base flex items-center justify-center gap-2 border-2 border-yellow-400 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-500 hover:text-yellow-700 cursor-pointer"
+                  disabled
+                >
+                  <Gift className="h-5 w-5 mr-2 text-yellow-500" />
+                  Buy a Gift Card (Coming Soon)
+                </Button>
+              </Link>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center w-full max-w-md">
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-12 px-8 text-base underline"
+                className="h-12 w-full px-8 text-base underline flex items-center justify-center cursor-pointer"
                 onClick={() => setOpenClientPhoneSheet(true)}
               >
-                <Search className="h-4 w-4" />
+                <Search className="h-4 w-4 mr-2" />
                 Find your appointment
               </Button>
             </div>
