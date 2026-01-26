@@ -37,15 +37,6 @@ export function AmountSelection() {
 
   return (
     <div className="space-y-6">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Gift className="w-5 h-5" />
-          Gift Card Details
-        </CardTitle>
-        <CardDescription>
-          {businessInfo?.name || "Business"} Gift Card
-        </CardDescription>
-      </CardHeader>
       <CardContent className="space-y-6">
         {/* Preset Amounts */}
         <div>

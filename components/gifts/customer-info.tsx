@@ -4,16 +4,14 @@ import { useGiftCardStore } from "@/store/gift-card-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { User, Mail, Gift, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { User, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export function CustomerInfo() {
   const {
-    customerEmail,
-    customerName,
     recipientEmail,
     recipientName,
     message,
@@ -24,7 +22,6 @@ export function CustomerInfo() {
     setMessage,
     selectedAmount,
     currency,
-    nextStep,
     previousStep,
     canProceedToPaymentStep,
     createCheckoutSession,
@@ -58,12 +55,6 @@ export function CustomerInfo() {
 
   return (
     <div className="space-y-6">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="w-5 h-5" />
-          Recipient Information
-        </CardTitle>
-      </CardHeader>
       <CardContent className="space-y-4">
         <div>
           <Label htmlFor="customer-name" className="text-xs text-gray-500">Recipient&apos;s Name *</Label>
@@ -74,7 +65,7 @@ export function CustomerInfo() {
             value={recipientName}
             onChange={(e) => setRecipientName(e.target.value)}
             required
-            className="mt-2"
+            className="mt-2 h-12"
           />
         </div>
 
@@ -87,7 +78,7 @@ export function CustomerInfo() {
             value={recipientEmail}
             onChange={(e) => setRecipientEmail(e.target.value)}
             required
-            className="mt-2"
+            className="mt-2 h-12"
           />
         </div>
 
@@ -100,7 +91,7 @@ export function CustomerInfo() {
             value={recipientPhone || ""}
             onChange={(e) => setRecipientPhone(e.target.value)}
             required
-            className="mt-2"
+            className="mt-2 h-12"
           />
         </div>
 
