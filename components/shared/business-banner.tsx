@@ -8,10 +8,9 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { X, AlertCircle, Info, Megaphone } from "lucide-react";
+import { CircleCheckIcon } from "lucide-react";
 import Image from "next/image";
 
 interface BusinessBannerModalProps {
@@ -30,13 +29,11 @@ export function BusinessBannerModal({ banner, businessId }: BusinessBannerModalP
     // Check if banner was already dismissed in this session
     const dismissedKey = `banner-dismissed-${businessId}-${banner.id}`;
     const isDismissed = sessionStorage.getItem(dismissedKey);
-    console.log("isDismissed: " + isDismissed);
     if (isDismissed && isDismissed == "true") {
       console.log("banner already dismissed, returning");
       return;
     }
     setTimeout(() => {
-      console.log("setting isOpen to true");
       setIsOpen(true);
     }, 100);
 
@@ -44,7 +41,6 @@ export function BusinessBannerModal({ banner, businessId }: BusinessBannerModalP
   }, [banner, businessId]);
 
   const handleDismiss = () => {
-    console.log("handleDismiss called");
     if (banner) {
       // Store dismissal in session storage
       const dismissedKey = `banner-dismissed-${businessId}-${banner.id}`;
@@ -56,29 +52,19 @@ export function BusinessBannerModal({ banner, businessId }: BusinessBannerModalP
   if (!banner) return null;
 
   return (
-    <Sheet 
-      open={isOpen} 
+    <Sheet
+      open={isOpen}
       onOpenChange={banner.dismissible ? setIsOpen : undefined}
 
     >
       <SheetContent
         side="top"
-        className="max-w-2xl mx-auto mt-10"
+        className="max-w-2xl mx-auto mt-[10vh] ml-4 mr-4"
         style={{
           backgroundColor: banner.background_color || undefined,
           color: banner.text_color || undefined,
         }}
       >
-        <SheetClose asChild>
-          <Button
-            onClick={handleDismiss}
-            className="absolute right-2 top-2 rounded-sm ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer z-50"
-            aria-label="Close banner"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </SheetClose>
-
         <div className="space-y-4 pr-8">
           {/* Banner Image */}
           {banner.image && (
@@ -134,18 +120,16 @@ export function BusinessBannerModal({ banner, businessId }: BusinessBannerModalP
             </div>
           )}
 
-          {/* Dismiss Button for non-dismissible banners with no CTA */}
-          {!banner.dismissible && !banner.cta_text && (
-            <div className="flex justify-center pt-2">
-              <Button
-                variant="outline"
-                onClick={handleDismiss}
-                className="w-full sm:w-auto"
-              >
-                Got it
-              </Button>
-            </div>
-          )}
+          <div className="flex justify-center pt-2">
+            <Button
+              variant="default"
+              onClick={handleDismiss}
+              className="w-full sm:w-auto cursor-pointer h-10"
+            >
+              <CircleCheckIcon className="h-4 w-4" />
+              Got it
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
