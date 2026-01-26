@@ -215,25 +215,20 @@ const HomeContent = () => {
                 </div>
               </CardContent>
             </Card>
-
             {/* Business Info */}
             <Card>
-              <CardHeader>
-                <CardTitle>About</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-
-                {businessInfo.online_booking?.policy && (
-                  <div>
-                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                      Policy:
+              {businessInfo.online_booking?.policy && (
+                <CardContent className="space-y-1">
+                  <div className="flex items-start gap-2">
+                    <span className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                      Policy
                     </span>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                      {businessInfo.online_booking.policy}
-                    </p>
                   </div>
-                )}
-              </CardContent>
+                  <div className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-line">
+                    {businessInfo.online_booking.policy}
+                  </div>
+                </CardContent>
+              )}
             </Card>
           </div>
         </div>
