@@ -10,6 +10,7 @@ import { Phone, Mail, MapPin, Globe, Clock, Search, Gift } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ClientPhoneSheet } from "@/components/shared/sheet";
 import { ClientCreate } from "@/types/appointment";
+import { BusinessBannerModal } from "@/components/shared/business-banner";
 
 const HomeContent = () => {
   const { initializeBusiness, businessInfo } = useBookingStore((state: BookingState) => state);
@@ -250,6 +251,12 @@ const HomeContent = () => {
             router.push(`/client?client_id=${clientInfo.id}&business_id=${businessInfo.id}`);
           }
         }}
+      />
+
+      {/* Business Banner Modal */}
+      <BusinessBannerModal
+        banner={businessInfo.active_banner || null}
+        businessId={businessInfo.id}
       />
     </div>
   );

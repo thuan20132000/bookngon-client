@@ -89,4 +89,25 @@ export interface BusinessInfo {
   operating_hours: OperatingHour[]
   settings: BusinessSettings
   online_booking: BusinessOnlineBooking
+  active_banner?: BusinessBanner | null
+}
+
+export interface BusinessBanner {
+  id: number
+  business: number
+  type: "promotion" | "info" | "alert"
+  title: string
+  message: string
+  cta_text?: string | null
+  cta_url?: string | null
+  start_at?: string | null
+  end_at?: string | null
+  dismissible: boolean
+  background_color?: string | null
+  text_color?: string | null
+  image?: string | null
+  is_active: boolean
+  is_visible: boolean
+  created_at: string
+  updated_at: string
 }
