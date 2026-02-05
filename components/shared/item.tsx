@@ -4,6 +4,7 @@ import { Service, Staff } from "@/types/appointment";
 import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import { formatPrice } from "@/lib/utils";
 
 interface ServiceItemProps {
   service: Service;
@@ -36,7 +37,9 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-medium">{service.name}</h3>
           <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
-            <span className="font-bold">${service.price}</span>
+            <span className="font-medium">
+            <span className="font-light text-gray-500">from </span>
+            {formatPrice(parseFloat(service.price))}</span>
             <span>·</span>
             <span className="font-bold">{service.duration_minutes} min</span>
           </div>
