@@ -177,7 +177,13 @@ const HomeContent = () => {
                 variant="ghost"
                 size="sm"
                 className="h-12 w-full px-8 text-base underline flex items-center justify-center cursor-pointer"
-                onClick={() => setOpenClientPhoneSheet(true)}
+                onClick={() => {
+                  if (isLoggedIn && loggedInClient?.id) {
+                    router.push(`/client?client_id=${loggedInClient.id}&business_id=${businessInfo.id}`);
+                  } else {
+                    setOpenClientPhoneSheet(true);
+                  }
+                }}
               >
                 <Search className="h-4 w-4 mr-2" />
                 Find your appointment
