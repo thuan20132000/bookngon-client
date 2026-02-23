@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessInfo } from "@/types/business";
 import Link from "next/link";
-import { Phone, Mail, MapPin, Globe, Clock, Search, Gift } from "lucide-react";
+import { Phone, Mail, MapPin, Globe, Clock, Search, Gift, LogIn, LogOut, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ClientPhoneSheet } from "@/components/shared/sheet";
+import { ClientPhoneSheet, LoyaltyLoginSheet } from "@/components/shared/sheet";
 import { ClientCreate } from "@/types/appointment";
 import { BusinessBannerModal } from "@/components/shared/business-banner";
+import { useAuthStore } from "@/store/auth-store";
 
 const HomeContent = () => {
   const { initializeBusiness, businessInfo } = useBookingStore((state: BookingState) => state);
@@ -18,7 +19,9 @@ const HomeContent = () => {
   const businessId = query.get('business_id')
   const [loading, setLoading] = useState(true);
   const [openClientPhoneSheet, setOpenClientPhoneSheet] = useState(false);
+  const [openLoyaltySheet, setOpenLoyaltySheet] = useState(false);
   const [clientInfo, setClientInfo] = useState<ClientCreate | null>(null);
+  const { isLoggedIn, loggedInClient, logout } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -107,6 +110,34 @@ const HomeContent = () => {
             )}
           </div>
 
+          {/* Welcome Banner for logged-in clients */}
+          {isLoggedIn && loggedInClient && (
+            <div className="mb-6 mx-auto w-full max-w-md rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <User className="h-5 w-5 text-green-700 dark:text-green-300" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-800 dark:text-green-200">
+                      Welcome back, {loggedInClient.first_name}!
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      {loggedInClient.phone}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-green-700 hover:text-red-600 hover:bg-green-100 dark:text-green-300 cursor-pointer"
+                  onClick={logout}
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Logout
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* CTA Section */}
           <div className="flex flex-col items-center gap-6 mb-12">
             <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
@@ -130,7 +161,18 @@ const HomeContent = () => {
                 </Button>
               </Link>
             </div>
-            <div className="flex justify-center w-full max-w-md">
+            <div className="flex flex-col gap-2 w-full max-w-md">
+              {!isLoggedIn && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-12 w-full px-8 text-base underline flex items-center justify-center cursor-pointer"
+                  onClick={() => setOpenLoyaltySheet(true)}
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  I&apos;m a returning client
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -242,11 +284,18 @@ const HomeContent = () => {
           setClientInfo(clientInfo);
           setOpenClientPhoneSheet(false);
           if (clientInfo) {
-            console.log("clientInfo: " + JSON.stringify(clientInfo));
             router.push(`/client?client_id=${clientInfo.id}&business_id=${businessInfo.id}`);
           }
         }}
       />
+
+      {businessId && (
+        <LoyaltyLoginSheet
+          open={openLoyaltySheet}
+          onOpenChange={setOpenLoyaltySheet}
+          businessId={businessId}
+        />
+      )}
 
       {/* Business Banner Modal */}
       <BusinessBannerModal

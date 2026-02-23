@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ClientFullNameSheet, ClientPhoneSheet } from "../shared/sheet";
 import { AppointmentService, ClientCreate, CreateAppointmentWithServicesPayload } from "@/types/appointment";
 import { useBookingStore } from "@/store/booking-store";
+import { useAuthStore } from "@/store/auth-store";
 import dayjs from "dayjs";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
@@ -31,8 +32,19 @@ export function BookingSummary() {
     createAppointmentPayload,
     setCreateAppointmentPayload,
   } = useBookingStore();
+  const { isLoggedIn, loggedInClient, logout } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (isLoggedIn && loggedInClient && !clientInfo) {
+      setClientInfo(loggedInClient);
+    }
+  }, [isLoggedIn, loggedInClient]);
+
+  const handleLogout = () => {
+    logout();
+    setClientInfo(null);
+  };
 
   const getClientFullName = () => {
     if (!clientInfo) return "";
@@ -139,51 +151,71 @@ export function BookingSummary() {
           </div>
         </div>
       </div>
-      <div >
-        <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number *</Label>
-          <Input
-            id="phone"
-            type="tel"
-            placeholder="Enter your phone number"
-            defaultValue={clientInfo?.phone || ""}
-            onClick={() => setIsShowCustomerInfoSheet(true)}
-          />
-          <ClientPhoneSheet
-            open={isShowCustomerInfoSheet}
-            onOpenChange={setIsShowCustomerInfoSheet}
-            clientInfo={clientInfo}
-            onChangeClientInfo={(clientInfo: ClientCreate | null) => {
-              if (clientInfo) {
-                setClientInfo(clientInfo)
-              }
-              setIsShowCustomerInfoSheet(false)
-              if (!clientInfo?.first_name || !clientInfo?.last_name) {
-                setIsShowClientFullNameSheet(true)
-              }
-            }}
-          />
-        </div>
-        <div className="space-y-2 mt-4">
-          <Label htmlFor="name">Full Name *</Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="Enter your full name"
-            defaultValue={getClientFullName()}
-            onClick={() => setIsShowClientFullNameSheet(true)}
-            disabled={!clientInfo?.phone}
-          />
-          <ClientFullNameSheet
-            open={isShowClientFullNameSheet}
-            onOpenChange={setIsShowClientFullNameSheet}
-            clientInfo={clientInfo}
-            setClientInfo={setClientInfo}
-            onChangeClientInfo={(clientInfo) => {
-              setClientInfo(clientInfo)
-            }}
-          />
-        </div>
+      <div>
+        {isLoggedIn && loggedInClient ? (
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 space-y-2">
+            <p className="text-sm font-semibold text-green-800">Booking as:</p>
+            <p className="font-bold text-gray-900">
+              {loggedInClient.first_name} {loggedInClient.last_name}
+            </p>
+            <p className="text-sm text-gray-600">{loggedInClient.phone}</p>
+            <Button
+              variant="link"
+              size="sm"
+              className="p-0 h-auto text-red-600 hover:text-red-800"
+              onClick={handleLogout}
+            >
+              Not you?
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number *</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Enter your phone number"
+                defaultValue={clientInfo?.phone || ""}
+                onClick={() => setIsShowCustomerInfoSheet(true)}
+              />
+              <ClientPhoneSheet
+                open={isShowCustomerInfoSheet}
+                onOpenChange={setIsShowCustomerInfoSheet}
+                clientInfo={clientInfo}
+                onChangeClientInfo={(clientInfo: ClientCreate | null) => {
+                  if (clientInfo) {
+                    setClientInfo(clientInfo)
+                  }
+                  setIsShowCustomerInfoSheet(false)
+                  if (!clientInfo?.first_name || !clientInfo?.last_name) {
+                    setIsShowClientFullNameSheet(true)
+                  }
+                }}
+              />
+            </div>
+            <div className="space-y-2 mt-4">
+              <Label htmlFor="name">Full Name *</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your full name"
+                defaultValue={getClientFullName()}
+                onClick={() => setIsShowClientFullNameSheet(true)}
+                disabled={!clientInfo?.phone}
+              />
+              <ClientFullNameSheet
+                open={isShowClientFullNameSheet}
+                onOpenChange={setIsShowClientFullNameSheet}
+                clientInfo={clientInfo}
+                setClientInfo={setClientInfo}
+                onChangeClientInfo={(clientInfo) => {
+                  setClientInfo(clientInfo)
+                }}
+              />
+            </div>
+          </>
+        )}
         <div className="space-y-2 mt-4">
           <Label htmlFor="notes">Notes</Label>
           <Textarea
