@@ -12,6 +12,7 @@ export interface TimeSlotsParams {
   service_ids: number[];
   duration: number;
   interval_minutes?: number;
+  client_id?: number | null;
 };
 
 export interface SearchClientByPhoneParams {

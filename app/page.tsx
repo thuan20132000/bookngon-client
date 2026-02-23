@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessInfo } from "@/types/business";
 import Link from "next/link";
-import { Phone, Mail, MapPin, Globe, Clock, Search, Gift, LogIn, LogOut, User } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Search, Gift, LogIn, LogOut, User } from "lucide-react";
+import { InstallPWAButton } from "@/components/shared/install-pwa-button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ClientPhoneSheet, LoyaltyLoginSheet } from "@/components/shared/sheet";
 import { ClientCreate } from "@/types/appointment";
@@ -188,6 +189,7 @@ const HomeContent = () => {
                 <Search className="h-4 w-4 mr-2" />
                 Find your appointment
               </Button>
+              <InstallPWAButton />
             </div>
           </div>
 
