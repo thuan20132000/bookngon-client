@@ -37,15 +37,17 @@ const HomeContent = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isInStandaloneMode()) return;
     if (businessId) {
       try {
         localStorage.setItem(PWA_BUSINESS_ID_KEY, businessId);
       } catch {
         // ignore
       }
-      return;
     }
+  }, [businessId]);
+
+  useEffect(() => {
+    if (!isInStandaloneMode() || businessId) return;
     try {
       const saved = localStorage.getItem(PWA_BUSINESS_ID_KEY);
       if (saved) {

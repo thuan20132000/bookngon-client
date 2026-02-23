@@ -108,7 +108,7 @@ export function InstallPWAButton() {
           <p className="font-medium mb-2">Install on iOS</p>
           <p className="text-zinc-600 dark:text-zinc-400">
             Tap the <Share className="inline h-4 w-4 mx-0.5 align-text-bottom" /> share
-            button in Safari, then select{" "}
+            button in your browser, then select{" "}
             <span className="font-medium">&quot;Add to Home Screen&quot;</span>.
           </p>
         </PopoverContent>
