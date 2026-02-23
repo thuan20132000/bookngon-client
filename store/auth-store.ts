@@ -15,7 +15,7 @@ export const useAuthStore = create<AuthState>()(
       loggedInClient: null,
       isLoggedIn: false,
       setLoggedInClient: (client) =>
-        set({ loggedInClient: client, isLoggedIn: !!client }),
+      set({ loggedInClient: client, isLoggedIn: !!client }),
       logout: () => set({ loggedInClient: null, isLoggedIn: false }),
     }),
     { name: "bookngon-auth" }

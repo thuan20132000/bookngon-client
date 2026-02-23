@@ -8,9 +8,9 @@ import { Home, Phone, Mail, Calendar, Clock, User, Badge, Heart, X } from "lucid
 import Link from "next/link";
 import dayjs from "dayjs";
 import { Client } from "@/types/client";
-import { AppointmentWithServices, AppointmentStatus, PaymentStatusType } from "@/types/appointment";
+import { AppointmentWithServices, AppointmentStatus } from "@/types/appointment";
 import { businessBookingApi, CancelAppointmentParams } from "@/lib/api/business-booking.api";
-import { getAppointmentStatusColor, getAppointmentStatusLabel, getPaymentStatusLabel } from "@/lib/utils";
+import { getAppointmentStatusColor, getAppointmentStatusLabel } from "@/lib/utils";
 import { toast } from "sonner";
 
 const ClientPageContent = () => {
@@ -39,7 +39,6 @@ const ClientPageContent = () => {
           businessBookingApi.getClient({ business_id: businessId, client_id: clientId }),
           businessBookingApi.getClientAppointments({ business_id: businessId, client_id: clientId }),
         ]);
-
         if (clientResponse) {
           setClientInfo(clientResponse.results || null);
         }

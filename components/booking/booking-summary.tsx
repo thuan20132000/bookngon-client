@@ -32,7 +32,7 @@ export function BookingSummary() {
     createAppointmentPayload,
     setCreateAppointmentPayload,
   } = useBookingStore();
-  const { isLoggedIn, loggedInClient, logout } = useAuthStore();
+  const { isLoggedIn, loggedInClient, setLoggedInClient, logout } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -43,6 +43,7 @@ export function BookingSummary() {
 
   const handleLogout = () => {
     logout();
+    setLoggedInClient(null);
     setClientInfo(null);
   };
 
@@ -211,6 +212,8 @@ export function BookingSummary() {
                 setClientInfo={setClientInfo}
                 onChangeClientInfo={(clientInfo) => {
                   setClientInfo(clientInfo)
+                  setLoggedInClient(clientInfo);
+
                 }}
               />
             </div>
