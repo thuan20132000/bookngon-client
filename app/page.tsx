@@ -51,12 +51,12 @@ const HomeContent = () => {
     try {
       const saved = localStorage.getItem(PWA_BUSINESS_ID_KEY);
       if (saved) {
-        router.replace(`/?business_id=${saved}`);
+        window.location.replace(`${window.location.origin}/?business_id=${saved}`);
       }
     } catch {
       // ignore
     }
-  }, [businessId, router]);
+  }, [businessId]);
 
   useEffect(() => {
     const loadBusiness = async () => {
