@@ -35,6 +35,19 @@ function isInStandaloneMode(): boolean {
   );
 }
 
+const PWA_BUSINESS_ID_KEY = "pwa_business_id";
+
+function saveBusinessIdFromUrl(): void {
+  const id = new URLSearchParams(window.location.search).get("business_id");
+  if (id) {
+    try {
+      localStorage.setItem(PWA_BUSINESS_ID_KEY, id);
+    } catch {
+      // ignore storage errors
+    }
+  }
+}
+
 export function InstallPWAButton() {
   const isClient = useIsClient();
   const [deferredPrompt, setDeferredPrompt] =
@@ -50,6 +63,7 @@ export function InstallPWAButton() {
     };
 
     const onAppInstalled = () => {
+      saveBusinessIdFromUrl();
       setInstalled(true);
       setDeferredPrompt(null);
     };
@@ -65,6 +79,7 @@ export function InstallPWAButton() {
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
+    saveBusinessIdFromUrl();
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
