@@ -68,6 +68,7 @@ export function TimeSlotSelection() {
     selectedTimeSlot,
     setSelectedDate,
     selectedDate,
+    clientInfo,
   } = useBookingStore();
 
 
@@ -87,7 +88,7 @@ export function TimeSlotSelection() {
         duration: getTotalDuration(),
         staff_id: selectedStaff?.id,
         interval_minutes: business?.settings?.time_slot_interval,
-
+        client_id: clientInfo?.id,
       };
       const response = await businessBookingApi.getTimeSlots(timeSlotsParams);
       setTimeSlots(response.results!);

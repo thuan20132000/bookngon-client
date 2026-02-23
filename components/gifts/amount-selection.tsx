@@ -37,80 +37,62 @@ export function AmountSelection() {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Gift Card Amount</h2>
-        <p className="text-gray-600">
-          Choose a preset amount or enter a custom amount
-        </p>
-      </div>
+      <CardContent className="space-y-6">
+        {/* Preset Amounts */}
+        <div>
+          <Label className="mb-3 block">Choose an Amount</Label>
+          <div className="grid grid-cols-3 gap-3">
+            {PRESET_AMOUNTS.map((amount) => (
+              <Button
+                key={amount}
+                type="button"
+                variant={selectedAmount === amount ? "default" : "outline"}
+                onClick={() => setSelectedAmount(amount)}
+                className="h-12"
+              >
+                {formatCurrency(amount)}
+              </Button>
+            ))}
+          </div>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Gift className="w-5 h-5" />
-            Gift Card Details
-          </CardTitle>
-          <CardDescription>
-            {businessInfo?.name || "Business"} Gift Card
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Preset Amounts */}
-          <div>
-            <Label className="mb-3 block">Choose an Amount</Label>
-            <div className="grid grid-cols-3 gap-3">
-              {PRESET_AMOUNTS.map((amount) => (
-                <Button
-                  key={amount}
-                  type="button"
-                  variant={selectedAmount === amount ? "default" : "outline"}
-                  onClick={() => setSelectedAmount(amount)}
-                  className="h-12"
-                >
-                  {formatCurrency(amount)}
-                </Button>
-              ))}
+        {/* Custom Amount */}
+        <div>
+          <Label htmlFor="custom-amount">Or Enter Custom Amount</Label>
+          <Input
+            id="custom-amount"
+            type="number"
+            min="1"
+            step="0.01"
+            placeholder="Enter amount"
+            value={selectedAmount && !PRESET_AMOUNTS.includes(selectedAmount) ? selectedAmount : ""}
+            onChange={handleCustomAmount}
+            className="mt-2"
+          />
+        </div>
+
+        {/* Selected Amount Display */}
+        {selectedAmount && (
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700">Selected Amount:</span>
+              <span className="text-2xl font-bold text-blue-600">
+                {formatCurrency(selectedAmount)}
+              </span>
             </div>
           </div>
+        )}
 
-          {/* Custom Amount */}
-          <div>
-            <Label htmlFor="custom-amount">Or Enter Custom Amount</Label>
-            <Input
-              id="custom-amount"
-              type="number"
-              min="1"
-              step="0.01"
-              placeholder="Enter amount"
-              value={selectedAmount && !PRESET_AMOUNTS.includes(selectedAmount) ? selectedAmount : ""}
-              onChange={handleCustomAmount}
-              className="mt-2"
-            />
-          </div>
-
-          {/* Selected Amount Display */}
-          {selectedAmount && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700">Selected Amount:</span>
-                <span className="text-2xl font-bold text-blue-600">
-                  {formatCurrency(selectedAmount)}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Continue Button */}
-          <Button
-            onClick={nextStep}
-            disabled={!canProceedToCustomerInfoStep()}
-            className="w-full"
-            size="lg"
-          >
-            Continue to Customer Information
-          </Button>
-        </CardContent>
-      </Card>
+        {/* Continue Button */}
+        <Button
+          onClick={nextStep}
+          disabled={!canProceedToCustomerInfoStep()}
+          className="w-full"
+          size="lg"
+        >
+          Continue
+        </Button>
+      </CardContent>
     </div>
   );
 }
