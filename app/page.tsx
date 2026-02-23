@@ -14,6 +14,17 @@ import { ClientCreate } from "@/types/appointment";
 import { BusinessBannerModal } from "@/components/shared/business-banner";
 import { useAuthStore } from "@/store/auth-store";
 
+const PWA_BUSINESS_ID_KEY = "pwa_business_id";
+
+function isInStandaloneMode(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    ("standalone" in window.navigator &&
+      (window.navigator as unknown as { standalone: boolean }).standalone)
+  );
+}
+
 const HomeContent = () => {
   const { initializeBusiness, businessInfo } = useBookingStore((state: BookingState) => state);
   const query = useSearchParams()
@@ -24,6 +35,26 @@ const HomeContent = () => {
   const [clientInfo, setClientInfo] = useState<ClientCreate | null>(null);
   const { isLoggedIn, loggedInClient, logout } = useAuthStore();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isInStandaloneMode()) return;
+    if (businessId) {
+      try {
+        localStorage.setItem(PWA_BUSINESS_ID_KEY, businessId);
+      } catch {
+        // ignore
+      }
+      return;
+    }
+    try {
+      const saved = localStorage.getItem(PWA_BUSINESS_ID_KEY);
+      if (saved) {
+        router.replace(`/?business_id=${saved}`);
+      }
+    } catch {
+      // ignore
+    }
+  }, [businessId, router]);
 
   useEffect(() => {
     const loadBusiness = async () => {
