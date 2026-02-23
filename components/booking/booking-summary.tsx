@@ -87,8 +87,6 @@ export function BookingSummary() {
         duration: 3000,
         position: 'top-center',
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 
