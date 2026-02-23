@@ -82,10 +82,13 @@ export function BookingSummary() {
       nextStep();
     } catch (error) {
       console.error("Error creating appointment", error);
-      toast.error("Error creating appointment");
+      toast.error("Error creating appointment", {
+        description: "Please try again.",
+        duration: 3000,
+        position: 'top-center',
+      });
     } finally {
       setIsLoading(false);
-      toast.dismiss();
     }
   }
 
