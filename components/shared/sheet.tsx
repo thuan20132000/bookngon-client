@@ -1,14 +1,16 @@
 import { AppointmentService, Client, ClientCreate, Service, Staff } from "@/types/appointment";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
 import { StaffItem } from "./item";
-import { Check, X } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useBookingStore } from "@/store/booking-store";
+import { useAuthStore } from "@/store/auth-store";
 import { businessBookingApi } from "@/lib/api/business-booking.api";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
 
 
 interface StaffRequestSheetProps {
@@ -362,3 +364,117 @@ export const ClientFullNameSheet = ({ open, onOpenChange, clientInfo, setClientI
     </Sheet>
   )
 }
+
+
+interface LoyaltyLoginSheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  businessId: string;
+}
+
+export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLoginSheetProps) => {
+  const [phone, setPhone] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { setLoggedInClient } = useAuthStore();
+
+  const validatePhone = (value: string) => {
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    const digitsOnly = value.replace(/\D/g, "");
+
+    if (digitsOnly.length < 10) {
+      setError("Phone number must be at least 10 digits");
+      return false;
+    }
+    if (!phoneRegex.test(value)) {
+      setError("Please enter a valid phone number");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setPhone(value);
+    if (error) setError("");
+    if (value.trim().length > 0) {
+      validatePhone(value);
+    }
+  };
+
+  const handleConfirm = async () => {
+    if (!validatePhone(phone)) return;
+
+    setIsLoading(true);
+    try {
+      const response = await businessBookingApi.getClientByPhone({
+        business_id: businessId,
+        phone: phone,
+      });
+
+      const foundClient = response.results;
+      if (foundClient) {
+        setLoggedInClient({
+          id: foundClient.id,
+          first_name: foundClient.first_name,
+          last_name: foundClient.last_name,
+          email: foundClient.email,
+          phone: phone,
+          is_active: true,
+          is_vip: false,
+          notes: "",
+          primary_business_id: businessId,
+          date_of_birth: null,
+        });
+        toast.success(`Welcome back, ${foundClient.first_name}!`, {
+          position: "top-center",
+        });
+        setPhone("");
+        onOpenChange(false);
+      } else {
+        setError("No account found with this phone number. Please book an appointment to create one.");
+      }
+    } catch {
+      setError("No account found with this phone number. Please book an appointment to create one.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right">
+        <SheetTitle>Returning Client</SheetTitle>
+        <div className="space-y-4">
+          <div className="space-y-2 pt-4">
+            <Label htmlFor="loyalty-phone" className="text-sm">Phone Number *</Label>
+            <Input
+              id="loyalty-phone"
+              type="tel"
+              placeholder="Enter your phone number"
+              value={phone}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              onBlur={() => phone.trim() && validatePhone(phone)}
+              className={error ? "border-red-500" : ""}
+              autoComplete="off"
+            />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <p className="text-xs text-gray-500">
+              Enter the phone number you used for previous bookings
+            </p>
+          </div>
+        </div>
+        <div className="flex justify-center mt-10">
+          <Button onClick={handleConfirm} className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle className="h-4 w-4" />
+            )}
+            {isLoading ? "Looking up..." : "Continue"}
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
