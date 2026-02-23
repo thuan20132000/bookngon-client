@@ -35,6 +35,7 @@ function isInStandaloneMode(): boolean {
   );
 }
 
+
 const PWA_BUSINESS_ID_KEY = "pwa_business_id";
 
 function saveBusinessIdFromUrl(): void {
@@ -64,6 +65,7 @@ export function InstallPWAButton() {
 
     const onAppInstalled = () => {
       saveBusinessIdFromUrl();
+
       setInstalled(true);
       setDeferredPrompt(null);
     };
@@ -108,7 +110,7 @@ export function InstallPWAButton() {
           <p className="font-medium mb-2">Install on iOS</p>
           <p className="text-zinc-600 dark:text-zinc-400">
             Tap the <Share className="inline h-4 w-4 mx-0.5 align-text-bottom" /> share
-            button in your browser, then select{" "}
+            button in Safari, then select{" "}
             <span className="font-medium">&quot;Add to Home Screen&quot;</span>.
           </p>
         </PopoverContent>
