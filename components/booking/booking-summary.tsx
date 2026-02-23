@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { ClientFullNameSheet, ClientPhoneSheet } from "../shared/sheet";
 import { AppointmentService, ClientCreate, CreateAppointmentWithServicesPayload } from "@/types/appointment";
 import { useBookingStore } from "@/store/booking-store";
@@ -12,7 +11,6 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { businessBookingApi } from "@/lib/api/business-booking.api";
 import { toast } from "sonner";
-import { Spinner } from "@/components/ui/spinner";
 import { FullScreenSpinner } from "../shared/spinner";
 
 export function BookingSummary() {
@@ -85,6 +83,9 @@ export function BookingSummary() {
     } catch (error) {
       console.error("Error creating appointment", error);
       toast.error("Error creating appointment");
+    } finally {
+      setIsLoading(false);
+      toast.dismiss();
     }
   }
 
