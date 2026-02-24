@@ -19,6 +19,8 @@ export function BookingConfirmation() {
     resetBooking,
     setCurrentStep,
     createAppointmentPayload,
+    clientInfo,
+    businessInfo
   } = useBookingStore();
 
   return (
@@ -140,13 +142,22 @@ export function BookingConfirmation() {
 
       {/* Actions */}
       <div className="flex justify-center gap-4">
-        <Button className="w-full cursor-pointer" onClick={() => {
+        <Button className="flex-1 cursor-pointer" onClick={() => {
           resetBooking();
           setCurrentStep(BOOKING_STEPS.SERVICE_SELECTION);
         }}>
           Book Another Appointment
         </Button>
+
+        <Button
+          className="flex-1 cursor-pointer bg-blue-600 text-white hover:bg-blue-700"
+          onClick={() => {
+            window.location.href = `/client?client_id=${clientInfo?.id}&business_id=${businessInfo?.id}`;
+          }}>
+          Find Your Appointment
+        </Button>
       </div>
+
     </div>
   );
 }

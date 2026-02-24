@@ -204,7 +204,6 @@ export const ClientPhoneSheet = ({ open, onOpenChange, clientInfo, onChangeClien
 
   const handleConfirm = async () => {
     const foundClient = await fetchClient();
-    console.log("foundClient: " + JSON.stringify(foundClient));
     if (foundClient) {
       onChangeClientInfo({
         id: foundClient.id,
@@ -377,6 +376,7 @@ export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLog
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { setLoggedInClient } = useAuthStore();
+  const { setClientInfo } = useBookingStore();
 
   const validatePhone = (value: string) => {
     const phoneRegex = /^[\d\s\-\+\(\)]+$/;
@@ -429,6 +429,7 @@ export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLog
         toast.success(`Welcome back, ${foundClient.first_name}!`, {
           position: "top-center",
         });
+        setClientInfo(foundClient);
         setPhone("");
         onOpenChange(false);
       } else {
@@ -444,7 +445,7 @@ export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLog
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right">
-        <SheetTitle>Returning Client</SheetTitle>
+        <SheetTitle>Loyalty Client</SheetTitle>
         <div className="space-y-4">
           <div className="space-y-2 pt-4">
             <Label htmlFor="loyalty-phone" className="text-sm">Phone Number *</Label>

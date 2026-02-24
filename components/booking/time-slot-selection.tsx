@@ -12,6 +12,7 @@ import { StaffRequestSheet } from "../shared/sheet";
 import { DateSelection } from "./date-selection";
 import dayjs from "dayjs";
 import { businessBookingApi, TimeSlotsParams } from "@/lib/api/business-booking.api";
+import { useAuthStore } from "@/store/auth-store";
 
 // Categorize time slot by time of day
 function getTimeOfDay(time: string): "morning" | "afternoon" | "evening" {
@@ -70,6 +71,7 @@ export function TimeSlotSelection() {
     selectedDate,
   } = useBookingStore();
 
+  const { isLoggedIn, loggedInClient } = useAuthStore();
 
   // Group time slots by time of day
   const groupedTimeSlots = useMemo(() => {
@@ -87,7 +89,7 @@ export function TimeSlotSelection() {
         duration: getTotalDuration(),
         staff_id: selectedStaff?.id,
         interval_minutes: business?.settings?.time_slot_interval,
-
+        client_id: loggedInClient?.id,
       };
       const response = await businessBookingApi.getTimeSlots(timeSlotsParams);
       setTimeSlots(response.results!);
