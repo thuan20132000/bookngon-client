@@ -141,7 +141,7 @@ export function BookingConfirmation() {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-col md:flex-row justify-center gap-4 p-4">
         <Button className="flex-1 cursor-pointer" onClick={() => {
           resetBooking();
           setCurrentStep(BOOKING_STEPS.SERVICE_SELECTION);
