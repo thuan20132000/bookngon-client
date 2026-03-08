@@ -3,15 +3,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardHeader,
-  CardTitle,
-  CardAction,
 } from "@/components/ui/card";
 import React from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { formatPrice } from "@/lib/utils";
-import { Award, LogOut } from "lucide-react";
+import { Award, Check, LogOut, Plus } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 
 interface ServiceItemProps {
@@ -27,22 +24,14 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
 }) => {
   return (
     <div
-      className={`transition-all p-2 rounded-lg border-2 ${selected ? "border-blue-500 bg-blue-50" : "border-gray-200"
-        } hover:border-blue-400 cursor-pointer`}
-      onClick={() => onSelect?.(service)}
+      className={`p-2 rounded-md bg-white`}
       tabIndex={0}
       role="button"
       aria-pressed={selected}
-      onKeyDown={e => {
-        if (e.key === " " || e.key === "Enter") {
-          e.preventDefault();
-          onSelect?.(service);
-        }
-      }}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 border-b border-gray-200 pb-2">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-medium">{service.name}</h3>
+          <h3 className="text-md font-semibold text-gray-600">{service.name}</h3>
           <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
             <span className="font-medium">
               <span className="font-light text-gray-500">from </span>
@@ -51,13 +40,22 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
             <span className="font-bold">{service.duration_minutes} min</span>
           </div>
         </div>
-        <Checkbox
-          checked={selected}
+        <Button
+          variant="outline"
+          size="icon"
+          className={`rounded-full flex items-center justify-center cursor-pointer shadow-md p-0`}
           aria-label={`Select ${service.name}`}
-          onClick={e => e.stopPropagation()}
-          onChange={() => onSelect?.(service)}
-          className="ml-2"
-        />
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect?.(service);
+          }}
+        >
+          {selected ? (
+            <Check className="text-blue-500 size-6" />
+          ) : (
+            <Plus className="text-gray-700 size-4" />
+          )}
+        </Button>
       </div>
     </div>
   );

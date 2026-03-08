@@ -65,10 +65,10 @@ export function ServiceSelection() {
         className="w-full"
       >
         {categoriesServices.map((category) => (
-          <AccordionItem key={category.id} value={String(category.id)}>
+          <AccordionItem key={category.id} value={String(category.id)} className="border-b-0">
             <AccordionTrigger onClick={() => handleAccordionChange(category.id)}>
               <div className="flex items-center gap-2">
-                <span className="font-bold">{category.name}</span>
+                <span className="font-semibold text-lg">{category.name}</span>
                 {category.services && category.services.length > 0 && (
                   <span className="text-gray-500 ml-2 font-bold">
                     ({category.services.length})
