@@ -31,13 +31,13 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
     >
       <div className="flex items-center justify-between gap-2 border-b border-gray-200 pb-2">
         <div className="flex-1 min-w-0">
-          <h3 className="text-md font-semibold text-gray-600">{service.name}</h3>
+          <p style={{ fontSize: '16px' }} className="font-semibold text-gray-600">{service.name}</p>
           <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
             <span className="font-medium">
               <span className="font-light text-gray-500">from </span>
               {formatPrice(parseFloat(service.price))}</span>
             <span>·</span>
-            <span className="font-bold">{service.duration_minutes} min</span>
+            <span className="font-light">{service.duration_minutes} min</span>
           </div>
         </div>
         <Button
