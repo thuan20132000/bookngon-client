@@ -78,7 +78,7 @@ export function ServiceSelection() {
             </AccordionTrigger>
             <AccordionContent>
               {category.services && category.services.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex flex-col gap-2">
                   {category.services.map((service) => {
                     return (
                       <ServiceItem
