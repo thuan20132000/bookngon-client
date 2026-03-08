@@ -34,6 +34,7 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ApiResponse, PaginatedResponse } from '@/types/api';
+import { signRequest } from '../utils';
 
 
 
@@ -42,7 +43,13 @@ export interface ApiRequestConfig extends AxiosRequestConfig {
 }
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://127.0.0.1:8003/api';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://127.0.0.1:8000/api';
+
+// const BASE_URL = 'http://127.0.0.1:8000';
+// const BASE_URL = 'http://192.168.64.1:8000';
+
+const PROD_API_KEY = process.env.NEXT_PUBLIC_PROD_API_KEY || '';
+const PROD_API_SECRET = process.env.NEXT_PUBLIC_PROD_API_SIGNATURE_SECRET_KEY || '';
 
 const API_URL = `${BASE_URL}/api`;
 
@@ -66,6 +73,16 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Add auth token if available and not skipped
     const apiConfig = config as InternalAxiosRequestConfig & ApiRequestConfig;
+
+    const singedConfig = signRequest({
+      method: config.method || '',
+      urlPath: config.url || '',
+      body: config.data || '',
+      publicKey: PROD_API_KEY || '',
+      secretKey: PROD_API_SECRET || '',
+    });
+    
+    Object.assign(config.headers, singedConfig.headers);
 
     if (!apiConfig.skipAuth) {
       config.params = {
