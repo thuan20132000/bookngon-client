@@ -140,7 +140,11 @@ export function TimeSlotSelection() {
               setSelectedTimeSlot(null);
             }}
             size="lg"
-            className={`border-gray-300 bg-white text-gray-700 cursor-pointer flex-1 ${!selectedStaff ? "border-blue-600 bg-blue-600 text-white" : ""}`}
+            className={`shadow-sm border-0 hover:shadow-xl transition-all duration-300 flex-1`}
+            style={{
+              backgroundColor: !selectedStaff ? "#007bff" : "white",
+              color: !selectedStaff ? "white" : "gray",
+            }}
           >
             Anyone
           </Button>
@@ -148,8 +152,11 @@ export function TimeSlotSelection() {
             variant="outline"
             onClick={() => setStaffRequestSheetOpen(true)}
             size="lg"
-            className={`border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-all cursor-pointer flex-1 ${selectedStaff ? "border-blue-600 " : ""}`}
-
+            className={`shadow-md border-0 hover:shadow-xl transition-all duration-300 flex-1`}
+            style={{
+              backgroundColor: selectedStaff ? "#007bff" : "white",
+              color: selectedStaff ? "white" : "gray",
+            }}
           >
             <div className="flex items-center gap-2">
               <span className="ml-2">Request</span>

@@ -33,9 +33,10 @@ export function DateSelection({ date, onDateSelect }: DateSelectionProps) {
           <Button
             variant="outline"
             id="date"
-            className="w-full justify-between font-normal cursor-pointer"
+            className="w-full justify-between cursor-pointer shadow-md border-0 hover:shadow-xl transition-all duration-300 rounded-md"
+            size="lg"
           >
-            {date ? dayjs(date).format("dddd, DD MMM YYYY") : "Select date"}
+            <span style={{ fontSize: '16px', fontWeight: '500' }}>{date ? dayjs(date).format("dddd, DD MMM YYYY") : "Select date"}</span>
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
@@ -60,17 +61,25 @@ export function DateSelection({ date, onDateSelect }: DateSelectionProps) {
             {/* Show the date range of the next 7 days */}
             <Button
               variant="outline"
-              className="flex-1 cursor-pointer"
+              className="flex-1 cursor-pointer shadow-md border-0 hover:shadow-xl transition-all duration-300 rounded-md"
               onClick={() => onDateChange(dayjs().toDate())}
+              size="lg"
+              style={{
+                backgroundColor: "white",
+              }}
             >
-              Today
+              <span style={{ fontSize: '16px', fontWeight: '600' }}>Today</span>
             </Button>
             <Button
               variant="outline"
-              className="flex-1 cursor-pointer"
+              className="flex-1 cursor-pointer shadow-md border-0 hover:shadow-xl transition-all duration-300 rounded-md"
+              size="lg"
+              style={{
+                backgroundColor: "white",
+              }}
               onClick={() => onDateChange(dayjs().add(1, 'day').toDate())}
             >
-              Tomorrow
+              <span style={{ fontSize: '16px', fontWeight: '600' }}>Tomorrow</span>
             </Button>
           </div>
         </PopoverContent>
