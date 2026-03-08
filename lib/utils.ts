@@ -5,6 +5,7 @@ import dayjs, { OpUnitType } from "dayjs"
 import { AppointmentStatus } from "@/types/appointment"
 import { CurrencyType } from "@/types/payment"
 import { PaymentStatusType } from "@/types/appointment"
+import CryptoJS from "crypto-js"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -167,4 +168,29 @@ export const getPaymentStatusLabel = (status: PaymentStatusType): string => {
     default:
       return status;
   }
+}
+
+
+
+/**
+ * Sign a request
+ * @param method - The HTTP method
+ * @param urlPath - The URL path
+ * @param body - The request body
+ * @param publicKey - The public key
+ * @param secretKey - The secret key
+ * @returns The signed request
+ */
+export function signRequest({ method, urlPath, body, publicKey, secretKey  }: { method: string, urlPath: string, body: string, publicKey: string, secretKey: string }) {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const message = `${method.toUpperCase()}|${timestamp}`;
+  const signature = CryptoJS.HmacSHA256(message, secretKey).toString(CryptoJS.enc.Hex);
+  return {
+      headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': publicKey,
+          'X-SIGNATURE': signature,
+          'X-TIMESTAMP': timestamp.toString(),
+      }
+  };
 }
