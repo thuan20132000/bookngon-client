@@ -1,14 +1,13 @@
 import { ClientCreate, Service, Staff } from "@/types/appointment";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
 } from "@/components/ui/card";
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { formatPrice } from "@/lib/utils";
-import { Award, Check, LogOut, Plus } from "lucide-react";
+import { Award, Check, ChevronDown, ChevronUp, LogOut, Plus } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 
 interface ServiceItemProps {
@@ -22,20 +21,23 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
   selected = false,
   onSelect,
 }) => {
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <div
-      className={`p-2 rounded-md bg-white`}
+      className={`p-2 rounded-md bg-white border-b border-gray-200`}
       tabIndex={0}
       role="button"
       aria-pressed={selected}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-gray-200 pb-2">
+      <div className="flex items-center justify-between gap-2 border-gray-200 pb-2">
         <div className="flex-1 min-w-0">
           <p style={{ fontSize: '16px' }} className="font-semibold text-gray-600">{service.name}</p>
           <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
             <span className="font-medium">
               <span className="font-light text-gray-500">from </span>
-              {formatPrice(parseFloat(service.price))}</span>
+              {formatPrice(parseFloat(service.price))}
+            </span>
             <span>·</span>
             <span className="font-light">{service.duration_minutes} min</span>
           </div>
@@ -43,7 +45,7 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className={`rounded-full flex items-center justify-center cursor-pointer shadow-md p-0`}
+          className="rounded-full flex items-center justify-center cursor-pointer shadow-md p-0"
           aria-label={`Select ${service.name}`}
           onClick={(e) => {
             e.stopPropagation();
@@ -56,6 +58,31 @@ export const ServiceItem: React.FC<ServiceItemProps> = ({
             <Plus className="text-gray-700 size-4" />
           )}
         </Button>
+      </div>
+      <div className="flex flex-col gap-2 p-2">
+        {service?.description && (
+          <div className="flex flex-col gap-2">
+            <p
+              className={`text-sm text-gray-500`}
+              style={{ 
+                fontSize: '14px', 
+                display: expanded ? 'block' : '-webkit-box', 
+                WebkitLineClamp: expanded ? 'none' : 2, 
+                WebkitBoxOrient: 'vertical', overflow: 'hidden' 
+              }}
+            >
+              {service.description}
+            </p>
+            <Button
+              variant="link"
+              size="sm"
+              className="text-sm text-gray-500"
+              onClick={() => setExpanded((prev) => !prev)}
+            >
+              {expanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
