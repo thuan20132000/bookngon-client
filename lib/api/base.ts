@@ -73,6 +73,7 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Add auth token if available and not skipped
     const apiConfig = config as InternalAxiosRequestConfig & ApiRequestConfig;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const singedConfig = signRequest({
       method: config.method || '',
@@ -91,7 +92,7 @@ apiClient.interceptors.request.use(
       config.data = {
         ...config.data,
       }
-      config.headers['X-Timezone'] = 'America/Toronto';
+      config.headers['X-Timezone'] = timezone;
     }
 
     // Log request in development
