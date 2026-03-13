@@ -127,17 +127,19 @@ const HomeContent = () => {
                   Book an Appointment
                 </Button>
               </Link>
-              <Link href={`/gifts?business_id=${businessInfo.id}`} className="flex-1">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full h-14 px-8 text-base flex items-center justify-center gap-2 border-2 border-yellow-400 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-500 hover:text-yellow-700 cursor-pointer"
-                  disabled
-                >
-                  <Gift className="h-5 w-5 mr-2 text-yellow-500" />
-                  Buy a Gift Card
-                </Button>
-              </Link>
+              {businessInfo.settings.allow_online_gift_cards && (
+                <Link href={`/gifts?business_id=${businessInfo.id}`} className="flex-1">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full h-14 px-8 text-base flex items-center justify-center gap-2 border-2 border-yellow-400 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-500 hover:text-yellow-700 cursor-pointer"
+                    disabled
+                  >
+                    <Gift className="h-5 w-5 mr-2 text-yellow-500" />
+                    Buy a Gift Card
+                  </Button>
+                </Link>
+              )}
             </div>
             <div className="flex flex-col gap-2 w-full max-w-md">
               <Button

@@ -31,6 +31,7 @@ export interface BusinessSettings {
   require_client_phone: boolean
   require_client_email: boolean
   auto_confirm_appointments: boolean
+  allow_online_gift_cards: boolean
   created_at: string
   updated_at: string
 }
