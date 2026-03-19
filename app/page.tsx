@@ -21,6 +21,9 @@ const HomeContent = () => {
   const [loading, setLoading] = useState(true);
   const [openClientPhoneSheet, setOpenClientPhoneSheet] = useState(false);
   const [openLoyaltySheet, setOpenLoyaltySheet] = useState(false);
+  const [showAllContact, setShowAllContact] = useState(false);
+  const [showAllHours, setShowAllHours] = useState(false);
+  const [showFullPolicy, setShowFullPolicy] = useState(false);
   // const [clientInfo, setClientInfo] = useState<ClientCreate | null>(null);
   const { isLoggedIn, loggedInClient, logout, setLoggedInClient } = useAuthStore();
   const router = useRouter();
@@ -179,41 +182,53 @@ const HomeContent = () => {
                 <CardTitle>Contact Us</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {businessInfo.phone_number && (
-                  <div className="flex items-start gap-3">
-                    <Phone className="mt-0.5 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-                    <a
-                      href={`tel:${businessInfo.phone_number}`}
-                      className="text-sm text-zinc-700 hover:text-black dark:text-zinc-300 dark:hover:text-zinc-50"
-                    >
-                      {businessInfo.phone_number}
-                    </a>
-                  </div>
+                <div
+                  className="space-y-4 overflow-hidden transition-all duration-300"
+                  style={{ maxHeight: showAllContact ? "500px" : "400px" }}
+                >
+                  {businessInfo.phone_number && (
+                    <div className="flex items-start gap-3">
+                      <Phone className="mt-0.5 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                      <a
+                        href={`tel:${businessInfo.phone_number}`}
+                        className="text-sm text-zinc-700 hover:text-black dark:text-zinc-300 dark:hover:text-zinc-50"
+                      >
+                        {businessInfo.phone_number}
+                      </a>
+                    </div>
+                  )}
+                  {businessInfo.email && (
+                    <div className="flex items-start gap-3">
+                      <Mail className="mt-0.5 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                      <a
+                        href={`mailto:${businessInfo.email}`}
+                        className="text-sm text-zinc-700 hover:text-black dark:text-zinc-300 dark:hover:text-zinc-50"
+                      >
+                        {businessInfo.email}
+                      </a>
+                    </div>
+                  )}
+                  {businessInfo.address && (
+                    <div className="flex items-start gap-3">
+                      <MapPin className="mt-0.5 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+                      <address
+                        className="not-italic text-sm text-zinc-700 dark:text-zinc-300"
+                        title={fullAddress}
+                        aria-label={fullAddress}
+                      >
+                        {fullAddress}
+                      </address>
+                    </div>
+                  )}
+                </div>
+                {(businessInfo.email || businessInfo.address) && (
+                  <button
+                    onClick={() => setShowAllContact((v) => !v)}
+                    className="text-xs text-zinc-500 hover:text-black dark:hover:text-zinc-50 underline"
+                  >
+                    {showAllContact ? "Show less" : "Show more"}
+                  </button>
                 )}
-                {businessInfo.email && (
-                  <div className="flex items-start gap-3">
-                    <Mail className="mt-0.5 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-                    <a
-                      href={`mailto:${businessInfo.email}`}
-                      className="text-sm text-zinc-700 hover:text-black dark:text-zinc-300 dark:hover:text-zinc-50"
-                    >
-                      {businessInfo.email}
-                    </a>
-                  </div>
-                )}
-                {businessInfo.address && (
-                  <div className="flex items-start gap-3">
-                    <MapPin className="mt-0.5 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-                    <address
-                      className="not-italic text-sm text-zinc-700 dark:text-zinc-300"
-                      title={fullAddress}
-                      aria-label={fullAddress}
-                    >
-                      {fullAddress}
-                    </address>
-                  </div>
-                )}
-
               </CardContent>
             </Card>
 
@@ -226,12 +241,12 @@ const HomeContent = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
+                <div
+                  className="space-y-2 overflow-hidden transition-all duration-300"
+                  style={{ maxHeight: showAllHours ? "500px" : "400px" }}
+                >
                   {operatingHours.map((schedule, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between text-sm"
-                    >
+                    <div key={index} className="flex justify-between text-sm">
                       <span className="font-medium text-zinc-900 dark:text-zinc-50">
                         {schedule.day}
                       </span>
@@ -241,9 +256,16 @@ const HomeContent = () => {
                     </div>
                   ))}
                 </div>
+                <button
+                  onClick={() => setShowAllHours((v) => !v)}
+                  className="mt-3 text-xs text-zinc-500 hover:text-black dark:hover:text-zinc-50 underline"
+                >
+                  {showAllHours ? "Show less" : "Show more"}
+                </button>
               </CardContent>
             </Card>
-            {/* Business Info */}
+
+            {/* Business Info / Policy */}
             <Card>
               {businessInfo.online_booking?.policy && (
                 <CardContent className="space-y-1">
@@ -252,9 +274,18 @@ const HomeContent = () => {
                       Policy
                     </span>
                   </div>
-                  <div className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-line">
+                  <div
+                    className="overflow-hidden whitespace-pre-line text-sm text-zinc-600 transition-all duration-300 dark:text-zinc-400"
+                    style={{ maxHeight: showFullPolicy ? "1000px" : "400px" }}
+                  >
                     {businessInfo.online_booking.policy}
                   </div>
+                  <button
+                    onClick={() => setShowFullPolicy((v) => !v)}
+                    className="text-xs text-zinc-500 hover:text-black dark:hover:text-zinc-50 underline"
+                  >
+                    {showFullPolicy ? "Show less" : "Show more"}
+                  </button>
                 </CardContent>
               )}
             </Card>
@@ -288,6 +319,22 @@ const HomeContent = () => {
         banner={businessInfo.active_banner || null}
         businessId={businessInfo.id}
       />
+
+      {/* Footer */}
+      <footer className="mt-12 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          © {new Date().getFullYear()}{" "}
+          <a
+            href="https://bookngon.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-black dark:hover:text-zinc-50 transition-colors"
+          >
+            BookNgon
+          </a>
+          . All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
