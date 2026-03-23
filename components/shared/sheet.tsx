@@ -449,7 +449,11 @@ export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLog
 
   return (
     <Sheet open={open} onOpenChange={(val) => { if (!val) resetState(); onOpenChange(val); }}>
-      <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+      <SheetContent 
+        side="bottom" 
+        className="max-h-[50%] overflow-y-auto" 
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <SheetTitle>Your Information</SheetTitle>
         <SheetDescription>
           Enter your phone number or sign in with Google to continue.
