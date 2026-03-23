@@ -40,7 +40,7 @@ const ClientPageContent = () => {
           businessBookingApi.getClientAppointments({ business_id: businessId, client_id: clientId }),
         ]);
         if (clientResponse) {
-          setClientInfo(clientResponse.results || null);
+          setClientInfo(clientResponse.results as Client || null);
         }
 
         if (appointmentsResponse) {
