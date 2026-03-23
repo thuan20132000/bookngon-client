@@ -43,9 +43,9 @@ export interface ApiRequestConfig extends AxiosRequestConfig {
 }
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://127.0.0.1:8000/api';
+// const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://127.0.0.1:8000/api';
 
-// const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = 'http://127.0.0.1:8000';
 // const BASE_URL = 'http://192.168.64.1:8000';
 
 const PROD_API_KEY = process.env.NEXT_PUBLIC_PROD_API_KEY || '';
@@ -86,6 +86,20 @@ apiClient.interceptors.request.use(
     Object.assign(config.headers, singedConfig.headers);
 
     if (!apiConfig.skipAuth) {
+      // Inject JWT token if available
+      const authData = localStorage.getItem("bookngon-auth");
+      if (authData) {
+        try {
+          const parsed = JSON.parse(authData);
+          const accessToken = parsed?.state?.accessToken;
+          if (accessToken) {
+            config.headers["Authorization"] = `Bearer ${accessToken}`;
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      }
+
       config.params = {
         ...config.params,
       }
@@ -135,6 +149,33 @@ apiClient.interceptors.response.use(
       console.error(`❌ API Error ${status}:`, data);
 
       switch (status) {
+        case 401:
+          // Unauthorized — attempt token refresh
+          if (originalRequest && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+              const authData = localStorage.getItem("bookngon-auth");
+              const parsed = JSON.parse(authData || "{}");
+              const storedRefreshToken = parsed?.state?.refreshToken;
+              if (storedRefreshToken) {
+                const refreshResponse = await apiClient.post(
+                  "/client-auth/token/refresh/",
+                  { refresh: storedRefreshToken }
+                );
+                const newAccessToken = refreshResponse.data?.results?.access;
+                if (newAccessToken) {
+                  parsed.state.accessToken = newAccessToken;
+                  localStorage.setItem("bookngon-auth", JSON.stringify(parsed));
+                  originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+                  return apiClient(originalRequest);
+                }
+              }
+            } catch {
+              // Refresh failed — clear auth state
+              localStorage.removeItem("bookngon-auth");
+            }
+          }
+          break;
         case 403:
           // Forbidden
           console.error('Access forbidden');
