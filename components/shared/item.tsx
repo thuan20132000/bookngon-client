@@ -142,12 +142,10 @@ interface LoyaltyClientItemProps {
 export const LoyaltyClientItem: React.FC<LoyaltyClientItemProps> = ({ client }) => {
   const logout = useAuthStore((s) => s.logout);
 
-  const initials = client.first_name
-    .split(" ")
+  const initials = client.first_name?.split(" ")
     .map((n: string) => n[0])
     .join("")
-    .toUpperCase()
-    .slice(0, 2);
+    .toUpperCase() || "";
 
   return (
     <Card className="w-full gap-4 py-4 mb-4">
