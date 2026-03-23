@@ -70,7 +70,7 @@ export const businessBookingApi = {
   },
 
   getClientByPhone: async (params: SearchClientByPhoneParams) => {
-    const response = await api.get<ClientCreate>('/business-booking/client-by-phone/', { params });
+    const response = await api.get<Client>('/business-booking/client-by-phone/', { params });
     return response.data;
   },
 

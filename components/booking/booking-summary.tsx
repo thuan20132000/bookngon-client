@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ClientFullNameSheet, ClientPhoneSheet } from "../shared/sheet";
-import { AppointmentService, ClientCreate, CreateAppointmentWithServicesPayload } from "@/types/appointment";
+import { LoyaltyLoginSheet } from "../shared/sheet";
+import { AppointmentService, CreateAppointmentWithServicesPayload } from "@/types/appointment";
 import { useBookingStore } from "@/store/booking-store";
 import { useAuthStore } from "@/store/auth-store";
 import dayjs from "dayjs";
@@ -12,11 +11,9 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { businessBookingApi } from "@/lib/api/business-booking.api";
 import { toast } from "sonner";
-import { FullScreenSpinner } from "../shared/spinner";
 
 export function BookingSummary() {
-  const [isShowCustomerInfoSheet, setIsShowCustomerInfoSheet] = useState(false);
-  const [isShowClientFullNameSheet, setIsShowClientFullNameSheet] = useState(false);
+  const [isShowClientInfoSheet, setIsShowClientInfoSheet] = useState(false);
   const {
     selectedAppointmentServices,
     selectedTimeSlot,
@@ -33,7 +30,6 @@ export function BookingSummary() {
     setCreateAppointmentPayload,
   } = useBookingStore();
   const { isLoggedIn, loggedInClient, setLoggedInClient, logout } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn && loggedInClient && !clientInfo) {
@@ -47,15 +43,9 @@ export function BookingSummary() {
     setClientInfo(null);
   };
 
-  const getClientFullName = () => {
-    if (!clientInfo) return "";
-    return clientInfo.first_name + " " + clientInfo.last_name;
-  }
-
   const handleConfirmBooking = async () => {
     if (!business) return;
 
-    // setIsLoading(true);
     try {
       toast.loading("Creating appointment...", {
         description: "We're preparing your appointment.",
@@ -80,8 +70,8 @@ export function BookingSummary() {
       payload.metadata = {
         is_rescheduled: false,
         is_cancelled: false,
-        is_send_confirmation_sms:true,
-        is_send_reminder_sms:true,
+        is_send_confirmation_sms: true,
+        is_send_reminder_sms: true,
         ...payload.metadata,
       }
 
@@ -105,9 +95,6 @@ export function BookingSummary() {
 
   return (
     <div className="space-y-6">
-      {isLoading && (
-        <FullScreenSpinner />
-      )}
       <div className="pt-6 border-b border-gray-200">
         <div className="space-y-2">
           {/* services */}
@@ -160,6 +147,7 @@ export function BookingSummary() {
               {loggedInClient.first_name} {loggedInClient.last_name}
             </p>
             <p className="text-sm text-gray-600">{loggedInClient.phone}</p>
+            <p className="text-sm text-gray-600">{loggedInClient.email}</p>
             <Button
               variant="link"
               size="sm"
@@ -170,54 +158,11 @@ export function BookingSummary() {
             </Button>
           </div>
         ) : (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number *</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Enter your phone number"
-                defaultValue={clientInfo?.phone || ""}
-                onClick={() => setIsShowCustomerInfoSheet(true)}
-              />
-              <ClientPhoneSheet
-                open={isShowCustomerInfoSheet}
-                onOpenChange={setIsShowCustomerInfoSheet}
-                clientInfo={clientInfo}
-                onChangeClientInfo={(clientInfo: ClientCreate | null) => {
-                  if (clientInfo) {
-                    setClientInfo(clientInfo)
-                  }
-                  setIsShowCustomerInfoSheet(false)
-                  if (!clientInfo?.first_name || !clientInfo?.last_name) {
-                    setIsShowClientFullNameSheet(true)
-                  }
-                }}
-              />
-            </div>
-            <div className="space-y-2 mt-4">
-              <Label htmlFor="name">Full Name *</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                defaultValue={getClientFullName()}
-                onClick={() => setIsShowClientFullNameSheet(true)}
-                disabled={!clientInfo?.phone}
-              />
-              <ClientFullNameSheet
-                open={isShowClientFullNameSheet}
-                onOpenChange={setIsShowClientFullNameSheet}
-                clientInfo={clientInfo}
-                setClientInfo={setClientInfo}
-                onChangeClientInfo={(clientInfo) => {
-                  setClientInfo(clientInfo)
-                  setLoggedInClient(clientInfo);
-
-                }}
-              />
-            </div>
-          </>
+          <LoyaltyLoginSheet
+            open={isShowClientInfoSheet}
+            onOpenChange={setIsShowClientInfoSheet}
+            businessId={business?.id.toString() || ''}
+          />
         )}
         <div className="space-y-2 mt-4">
           <Label htmlFor="notes">Notes</Label>
@@ -239,13 +184,23 @@ export function BookingSummary() {
           <Button className="flex-1 cursor-pointer" onClick={() => previousStep()}>
             Back
           </Button>
-          <Button 
-            className="flex-1 cursor-pointer" 
-            onClick={handleConfirmBooking}
-            disabled={!clientInfo?.phone || !getClientFullName()}
-          >
-            Confirm Booking
-          </Button>
+          {
+            isLoggedIn ? (
+              <Button
+                className="flex-1 cursor-pointer"
+                onClick={handleConfirmBooking}
+              >
+                Confirm Booking
+              </Button>
+            ) : (
+              <Button
+                className="flex-1 cursor-pointer"
+                onClick={() => setIsShowClientInfoSheet(true)}
+              >
+                Continue
+              </Button>
+            )
+          }
         </div>
       </div>
     </div>

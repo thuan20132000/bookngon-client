@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { Category, ClientCreate, Service, Staff, TimeSlot, AppointmentService, CreateAppointmentWithServicesPayload } from "@/types/appointment";
+import { Category, Staff, TimeSlot, AppointmentService, CreateAppointmentWithServicesPayload, Client, ClientCreate } from "@/types/appointment";
 
 import { BOOKING_STEPS } from "@/enums/booking.enums";
-import { Business, BusinessInfo } from "@/types/business";
+import { BusinessInfo } from "@/types/business";
 import { businessBookingApi } from "@/lib/api/business-booking.api";
 
 
