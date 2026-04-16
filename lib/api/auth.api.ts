@@ -45,4 +45,12 @@ export const authApi = {
     );
     return response.data;
   },
+
+  deleteAccount: async (clientId: string, businessId: string) => {
+    const response = await api.delete(
+      `/client-auth/delete-account/`,
+      { data: { client_id: clientId, business_id: businessId } }
+    );
+    return response.data;
+  },
 };
