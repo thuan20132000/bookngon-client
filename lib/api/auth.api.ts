@@ -7,6 +7,13 @@ interface GoogleLoginResponse {
   client: ClientCreate;
 }
 
+interface FacebookLoginResponse {
+  access: string;
+  refresh: string;
+  client: ClientCreate;
+  is_new_client: boolean;
+}
+
 interface RefreshTokenResponse {
   access: string;
 }
@@ -16,6 +23,15 @@ export const authApi = {
     const response = await api.post<GoogleLoginResponse>(
       "/client-auth/google/",
       { google_id_token: googleIdToken, business_id: businessId },
+      { skipAuth: true }
+    );
+    return response.data;
+  },
+
+  facebookLogin: async (facebookAccessToken: string, businessId: string) => {
+    const response = await api.post<FacebookLoginResponse>(
+      "/client-auth/facebook/",
+      { facebook_access_token: facebookAccessToken, business_id: businessId },
       { skipAuth: true }
     );
     return response.data;
