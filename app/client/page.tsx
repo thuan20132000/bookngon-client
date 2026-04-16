@@ -4,12 +4,13 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Phone, Mail, Calendar, Clock, User, Badge, Heart, X } from "lucide-react";
+import { Home, Phone, Mail, Calendar, Clock, User, Badge, Heart, X, Trash2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { Client } from "@/types/client";
 import { AppointmentWithServices, AppointmentStatus } from "@/types/appointment";
 import { businessBookingApi, CancelAppointmentParams } from "@/lib/api/business-booking.api";
+import { authApi } from "@/lib/api/auth.api";
 import { getAppointmentStatusColor, getAppointmentStatusLabel } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -22,6 +23,8 @@ const ClientPageContent = () => {
   const [clientInfo, setClientInfo] = useState<Client | null>(null);
   const [appointments, setAppointments] = useState<AppointmentWithServices[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const loadClientData = async () => {
@@ -80,6 +83,21 @@ const ClientPageContent = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!clientId || !businessId) return;
+    setIsDeleting(true);
+    try {
+      await authApi.deleteAccount(clientId, businessId);
+      toast.success("Your account has been deleted.");
+      setClientInfo(null);
+    } catch {
+      toast.error("Failed to delete account. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
@@ -101,13 +119,14 @@ const ClientPageContent = () => {
               <Button>Go Home</Button>
             </Link>
           )}
+          
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white font-sans dark:from-black dark:to-zinc-950">
+    <div className="min-h-screen bg-gradient from-zinc-50 to-white font-sans dark:from-black dark:to-zinc-950">
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -343,6 +362,62 @@ const ClientPageContent = () => {
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          {/* Danger Zone */}
+          <Card className="mt-8 border-red-200 dark:border-red-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                <AlertTriangle className="h-5 w-5" />
+                Danger Zone
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-medium text-zinc-900 dark:text-zinc-50">Delete your account</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    Permanently delete your account and all associated data. This action cannot be undone.{" "}
+                    <Link href="/instructions/delete-account" className="text-blue-600 underline hover:text-blue-700 dark:text-blue-400">
+                      Learn more
+                    </Link>
+                  </p>
+                </div>
+                {!showDeleteConfirm ? (
+                  <Button
+                    variant="outline"
+                    className="shrink-0 border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Account
+                  </Button>
+                ) : (
+                  <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeleting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="bg-red-600 text-white hover:bg-red-700"
+                      onClick={handleDeleteAccount}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Deleting..." : "Yes, delete my account"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+              {showDeleteConfirm && (
+                <div className="mt-4 rounded-lg bg-red-50 p-3 dark:bg-red-950/40">
+                  <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                    Are you sure? This will permanently delete your account, personal data, and appointment history from our system.
+                  </p>
                 </div>
               )}
             </CardContent>
