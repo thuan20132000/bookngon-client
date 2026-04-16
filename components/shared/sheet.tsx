@@ -10,10 +10,12 @@ import { useAuthStore } from "@/store/auth-store";
 import { businessBookingApi } from "@/lib/api/business-booking.api";
 import { authApi } from "@/lib/api/auth.api";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import FacebookLogin from "@greatsumini/react-facebook-login";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
 
+const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '';
 
 interface StaffRequestSheetProps {
   open: boolean;
@@ -327,6 +329,28 @@ export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLog
     }
   };
 
+  const handleFacebookSuccess = async (accessToken: string) => {
+    setIsLoading(true);
+    try {
+      const response = await authApi.facebookLogin(accessToken, businessId);
+      if (response.success && response.results) {
+        const { access, refresh, client } = response.results;
+        setTokens(access, refresh);
+        setLoggedInClient(client);
+        setClientInfo(client);
+        toast.success(`Welcome, ${client.first_name}!`, { position: "top-center" });
+        resetState();
+        onOpenChange(false);
+      } else {
+        setError(response.message || "Login failed. Please try again.");
+      }
+    } catch {
+      setError("Facebook login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     const idToken = credentialResponse.credential;
     if (!idToken) {
@@ -456,7 +480,7 @@ export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLog
       >
         <SheetTitle>Your Information</SheetTitle>
         <SheetDescription>
-          Enter your phone number or sign in with Google to continue.
+          Enter your phone number or sign in with Google or Facebook to continue.
         </SheetDescription>
         <div className="space-y-4 mt-4">
           {/* Phone input */}
@@ -573,6 +597,37 @@ export const LoyaltyLoginSheet = ({ open, onOpenChange, businessId }: LoyaltyLog
               text="continue_with"
             />
           </div>
+
+          {/* Facebook Sign-In */}
+          <FacebookLogin
+            appId={FACEBOOK_APP_ID}
+            onSuccess={(response) => handleFacebookSuccess(response.accessToken)}
+            onFail={(error) => {
+              console.log("Facebook sign-in failed", error);
+              setError("Facebook sign-in failed. Please try again.")
+            }}
+            fields="name,picture"
+            scope="public_profile"
+          
+            render={({ onClick }) => (
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={onClick}
+                disabled={isLoading}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 fill-[#1877F2]"
+                  aria-hidden="true"
+                >
+                  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.884v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
+                </svg>
+                Continue with Facebook
+              </Button>
+            )}
+          />
         </div>
       </SheetContent>
     </Sheet>
